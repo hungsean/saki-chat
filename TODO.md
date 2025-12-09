@@ -27,7 +27,7 @@
 
 ### 2. 狀態管理
 
-- [ ] **Zustand + Immer Middleware**
+- [X] **Zustand + Immer Middleware**
   ```bash
   pnpm add zustand immer
   ```
@@ -36,7 +36,7 @@
 
 ### 3. Matrix 整合
 
-- [ ] **Matrix JS SDK**
+- [X] **Matrix JS SDK**
   ```bash
   pnpm add matrix-js-sdk
   ```
@@ -45,12 +45,12 @@
 
 ### 4. 資料持久化
 
-- [ ] **IndexedDB Wrapper**
+- [X] **IndexedDB Wrapper**
   ```bash
   pnpm add idb
   ```
 
-- [ ] **Tauri Store Plugin**
+- [X] **Tauri Store Plugin**
   ```bash
   pnpm add @tauri-apps/plugin-store
   ```
@@ -59,7 +59,7 @@
 
 ### 5. 路由管理
 
-- [ ] **React Router v6**
+- [X] **React Router v6**
   ```bash
   pnpm add react-router-dom
   ```
@@ -68,12 +68,12 @@
 
 ### 6. 資料處理工具
 
-- [ ] **日期處理**
+- [X] **日期處理**
   ```bash
   pnpm add date-fns
   ```
 
-- [ ] **工具函式庫**
+- [X] **工具函式庫**
   ```bash
   pnpm add lodash-es
   pnpm add -D @types/lodash-es
@@ -83,7 +83,7 @@
 
 ### 7. 效能優化
 
-- [ ] **虛擬滾動**
+- [X] **虛擬滾動**
   ```bash
   pnpm add react-window
   pnpm add -D @types/react-window
@@ -93,7 +93,7 @@
 
 ### 8. 安全性
 
-- [ ] **XSS 防護**
+- [X] **XSS 防護**
   ```bash
   pnpm add dompurify
   pnpm add -D @types/dompurify
@@ -103,18 +103,18 @@
 
 ### 9. 開發工具
 
-- [ ] **ESLint 相關**
+- [X] **ESLint 相關**
   ```bash
   pnpm add -D eslint @eslint/js @typescript-eslint/parser @typescript-eslint/eslint-plugin
   pnpm add -D eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh
   ```
 
-- [ ] **Prettier**
+- [X] **Prettier**
   ```bash
   pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
   ```
 
-- [ ] **建立設定檔**
+- [X] **建立設定檔**
   - 建立 `.eslintrc.cjs` 或 `eslint.config.js`
   - 建立 `.prettierrc`
   - 建立 `.prettierignore`
@@ -163,18 +163,18 @@
 
 ## 📁 專案結構建立
 
-- [ ] 建立 `src/components/ui/` (shadcn/ui 元件)
-- [ ] 建立 `src/components/chat/`
-- [ ] 建立 `src/components/rooms/`
-- [ ] 建立 `src/features/auth/`
-- [ ] 建立 `src/features/chat/`
-- [ ] 建立 `src/features/rooms/`
-- [ ] 建立 `src/stores/`
-- [ ] 建立 `src/lib/matrix/`
-- [ ] 建立 `src/lib/storage/`
-- [ ] 建立 `src/lib/utils/`
-- [ ] 建立 `src/hooks/`
-- [ ] 建立 `src/types/`
+- [X] 建立 `src/components/ui/` (shadcn/ui 元件)
+- [X] 建立 `src/components/chat/`
+- [X] 建立 `src/components/rooms/`
+- [X] 建立 `src/features/auth/`
+- [X] 建立 `src/features/chat/`
+- [X] 建立 `src/features/rooms/`
+- [X] 建立 `src/stores/`
+- [X] 建立 `src/lib/matrix/`
+- [X] 建立 `src/lib/storage/`
+- [X] 建立 `src/lib/utils/`
+- [X] 建立 `src/hooks/`
+- [X] 建立 `src/types/`
 
 ---
 
