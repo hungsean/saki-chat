@@ -1,10 +1,10 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { visualizer } from "rollup-plugin-visualizer";
-import viteCompression from "vite-plugin-compression";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { visualizer } from 'rollup-plugin-visualizer';
+import viteCompression from 'vite-plugin-compression';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,13 +19,13 @@ export default defineConfig(async ({ mode }) => ({
       verbose: true,
       disable: false,
       threshold: 10240,
-      algorithm: "gzip",
-      ext: ".gz",
+      algorithm: 'gzip',
+      ext: '.gz',
     }),
-    mode === "analyze" &&
+    mode === 'analyze' &&
       visualizer({
         open: true,
-        filename: "dist/stats.html",
+        filename: 'dist/stats.html',
         gzipSize: true,
         brotliSize: true,
         json: true,
@@ -33,7 +33,7 @@ export default defineConfig(async ({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 
@@ -48,14 +48,14 @@ export default defineConfig(async ({ mode }) => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
+          protocol: 'ws',
           host,
           port: 1421,
         }
       : undefined,
     watch: {
       // 3. tell Vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
 }));
