@@ -28,6 +28,7 @@ export default defineConfig(async ({ mode }) => ({
         filename: "dist/stats.html",
         gzipSize: true,
         brotliSize: true,
+        json: true,
       }),
   ].filter(Boolean),
   resolve: {
