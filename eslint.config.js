@@ -20,6 +20,13 @@ export default [
           jsx: true,
         },
       },
+      globals: {
+        // 瀏覽器環境
+        document: 'readonly',
+        window: 'readonly',
+        HTMLElement: 'readonly',
+        navigator: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': tseslint,
@@ -47,6 +54,21 @@ export default [
     settings: {
       react: {
         version: 'detect',
+      },
+    },
+  },
+  {
+    // Node.js 環境配置 (vite.config.ts, scripts/)
+    files: ['vite.config.ts', 'scripts/**/*.js', '*.config.js'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
       },
     },
   },
