@@ -1,0 +1,78 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+jobs:
+  claude-review:
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            請深入審查這個 PR,並提供建設性的回饋。審查重點:
+
+            ## 程式碼品質
+            - TypeScript strict mode 使用
+            - React hooks 最佳實踐
+            - 元件設計是否符合專案風格
+
+            ## 架構與設計
+            - Zustand store 使用是否恰當
+            - Matrix SDK 整合是否正確封裝在 lib/matrix/
+            - 是否遵循專案結構規範
+
+            ## 安全性
+            - XSS 防護 (檢查是否需要 DOMPurify)
+            - Access token 處理是否安全
+            - 使用者輸入驗證
+
+            ## 效能考量
+            - 是否有不必要的重新渲染
+            - 大列表是否需要虛擬化
+            - 圖片 lazy loading
+
+            ## 測試與文件
+            - 是否需要新增測試
+            - 複雜邏輯是否有適當註解
+
+            請先用 gh pr diff 和 gh pr view 了解變更內容,
+            然後讀取相關檔案進行深入分析,
+            最後用 gh pr comment 留下你的 review。
+
+            參考 CLAUDE.md 中的開發規範來評估程式碼。
+
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
+          claude_args: '--allowed-tools "Read,Grep,Glob,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+
