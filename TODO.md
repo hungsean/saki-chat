@@ -1,186 +1,48 @@
-# TODO - Saki Chat 依賴安裝清單
+# TODO - Saki Chat
 
-> 根據 CLAUDE.md 技術棧整理的安裝步驟
+## 🎨 Theme 切換功能
 
----
+### 功能說明
 
-## 📦 依賴安裝進度
+實作應用程式主題切換系統,支援以下主題模式:
 
-### 1. 樣式系統
+- **system** - 跟隨系統主題設定
+- **light** - 淺色主題
+- **dark** - 深色主題
+- **saki** - 專屬特色主題
 
-- [X] **Tailwind CSS 核心套件**
-  ```bash
-  pnpm add -D tailwindcss postcss autoprefixer
-  pnpm tailwindcss init -p
-  ```
+### 開發任務
 
-- [X] **配置 Tailwind CSS**
-  - 設定 `tailwind.config.js`
-  - 設定 `src/index.css` 引入 Tailwind directives
+- [ ] 建立 theme store (Zustand)
+  - 定義 theme type: 'system' | 'light' | 'dark' | 'saki'
+  - 實作 theme 切換邏輯
+  - 整合 Tauri Store 持久化
 
-- [X] **shadcn/ui 初始化**
-  ```bash
-  pnpm dlx shadcn@latest init
-  ```
+- [ ] 實作 theme provider
+  - 建立 ThemeProvider component
+  - 處理 system theme 偵測
+  - 套用對應的 CSS classes
 
----
+- [ ] 設計 Tailwind CSS theme 配置
+  - 配置 light theme colors
+  - 配置 dark theme colors
+  - 設計 saki theme 專屬配色
 
-### 2. 狀態管理
+- [ ] 建立 theme 切換 UI
+  - 使用 shadcn/ui 元件
+  - 建立 theme selector
+  - 加入視覺化預覽
 
-- [X] **Zustand + Immer Middleware**
-  ```bash
-  pnpm add zustand immer
-  ```
-
----
-
-### 3. Matrix 整合
-
-- [X] **Matrix JS SDK**
-  ```bash
-  pnpm add matrix-js-sdk
-  ```
-
----
-
-### 4. 資料持久化
-
-- [X] **IndexedDB Wrapper**
-  ```bash
-  pnpm add idb
-  ```
-
-- [X] **Tauri Store Plugin**
-  ```bash
-  pnpm add @tauri-apps/plugin-store
-  ```
-
----
-
-### 5. 路由管理
-
-- [X] **React Router v6**
-  ```bash
-  pnpm add react-router-dom
-  ```
-
----
-
-### 6. 資料處理工具
-
-- [X] **日期處理**
-  ```bash
-  pnpm add date-fns
-  ```
-
-- [X] **工具函式庫**
-  ```bash
-  pnpm add lodash-es
-  pnpm add -D @types/lodash-es
-  ```
-
----
-
-### 7. 效能優化
-
-- [X] **虛擬滾動**
-  ```bash
-  pnpm add react-window
-  pnpm add -D @types/react-window
-  ```
-
----
-
-### 8. 安全性
-
-- [X] **XSS 防護**
-  ```bash
-  pnpm add dompurify
-  pnpm add -D @types/dompurify
-  ```
-
----
-
-### 9. 開發工具
-
-- [X] **ESLint 相關**
-  ```bash
-  pnpm add -D eslint @eslint/js @typescript-eslint/parser @typescript-eslint/eslint-plugin
-  pnpm add -D eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh
-  ```
-
-- [X] **Prettier**
-  ```bash
-  pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
-  ```
-
-- [X] **建立設定檔**
-  - 建立 `.eslintrc.cjs` 或 `eslint.config.js`
-  - 建立 `.prettierrc`
-  - 建立 `.prettierignore`
-
----
-
-## 🔧 配置檔案設定
-
-### Tailwind CSS 相關
-
-- [ ] 配置 `tailwind.config.js`
-  - 設定 content paths
-  - 整合 shadcn/ui theme
-
-- [ ] 配置 `src/index.css`
-  - 加入 `@tailwind` directives
-
-- [ ] 配置 `components.json` (shadcn/ui)
-
----
-
-### TypeScript 相關
-
-- [ ] 檢查 `tsconfig.json` 設定
-  - 確認 strict mode
-  - 設定 path aliases
-
----
-
-### Vite 相關
-
-- [ ] 檢查 `vite.config.ts`
-  - 設定 path aliases (配合 tsconfig)
-
----
-
-### Tauri 相關
-
-- [ ] 檢查 `src-tauri/Cargo.toml`
-  - 確認需要的 plugins
-
-- [ ] 檢查 `src-tauri/tauri.conf.json`
-  - 確認 store plugin 設定
-
----
-
-## 📁 專案結構建立
-
-- [X] 建立 `src/components/ui/` (shadcn/ui 元件)
-- [X] 建立 `src/components/chat/`
-- [X] 建立 `src/components/rooms/`
-- [X] 建立 `src/features/auth/`
-- [X] 建立 `src/features/chat/`
-- [X] 建立 `src/features/rooms/`
-- [X] 建立 `src/stores/`
-- [X] 建立 `src/lib/matrix/`
-- [X] 建立 `src/lib/storage/`
-- [X] 建立 `src/lib/utils/`
-- [X] 建立 `src/hooks/`
-- [X] 建立 `src/types/`
+- [ ] 測試
+  - 測試各主題切換
+  - 測試 system theme 自動切換
+  - 測試設定持久化
 
 ---
 
 ## 📝 注意事項
 
-- 每完成一項請打勾 ✓
-- 安裝過程中如有錯誤請記錄
-- 配置檔案請參考 CLAUDE.md 規範
-- 安裝完成後記得執行 `pnpm install` 確認
+- saki theme 需要設計符合專案特色的配色方案
+- system theme 需監聽作業系統主題變更事件
+- theme 設定需即時套用,無需重新載入
+- 確保所有 UI 元件在各主題下都能正常顯示

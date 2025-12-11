@@ -220,6 +220,10 @@ pnpm test:coverage     # 生成覆蓋率報告
 
 ---
 
+## 其他備註
+
+- 預設情況下請使用英文作為軟體的顯示語言
+
 ## 相關資源
 
 - [Tauri 文件](https://tauri.app/)
