@@ -73,6 +73,23 @@ export default [
     },
   },
   {
+    // Vitest 測試檔案環境配置
+    files: ['**/*.test.{ts,tsx}', '**/test/**/*.{ts,tsx}', 'vitest.config.ts'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        test: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['dist', 'node_modules', 'src-tauri'],
   },
 ];

@@ -37,10 +37,11 @@ jobs:
 
       - name: Generate coverage report
         run: pnpm test:coverage
-        continue-on-error: true
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         if: success()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+          files: ./coverage/coverage-final.json
