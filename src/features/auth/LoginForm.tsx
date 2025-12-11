@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
+import {
+  verifyHomeserver,
+  extractHomeserverDomain,
+} from '@/lib/matrix/homeserver';
 
 type LoginStep = 'homeserver' | 'credentials';
 
@@ -13,33 +17,18 @@ export function LoginForm() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState('');
 
-  const normalizeHomeserver = (input: string): string => {
-    let normalized = input.trim();
-    if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
-      normalized = `https://${normalized}`;
-    }
-    return normalized;
-  };
-
-  const verifyHomeserver = async (e: React.FormEvent) => {
+  const handleVerifyHomeserver = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsVerifying(true);
 
     try {
-      const normalizedUrl = normalizeHomeserver(homeserver);
-      const response = await fetch(`${normalizedUrl}/.well-known/matrix/client`);
+      const result = await verifyHomeserver(homeserver);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data['m.homeserver']?.base_url) {
-          setHomeserver(normalizedUrl);
-          setStep('credentials');
-        } else {
-          throw new Error('Invalid homeserver response');
-        }
+      if (result.isValid) {
+        setStep('credentials');
       } else {
-        throw new Error('Cannot connect to homeserver');
+        setError(result.error || 'Verification failed. Please check the homeserver URL');
       }
     } catch (err) {
       setError(
@@ -55,7 +44,8 @@ export function LoginForm() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const fullUsername = `@${username}:${homeserver.replace(/^https?:\/\//, '')}`;
+    const domain = extractHomeserverDomain(homeserver);
+    const fullUsername = `@${username}:${domain}`;
     console.log('Login:', { homeserver, username: fullUsername, password });
   };
 
@@ -77,7 +67,7 @@ export function LoginForm() {
 
           <div className="space-y-4">
             <form
-              onSubmit={step === 'homeserver' ? verifyHomeserver : handleLogin}
+              onSubmit={step === 'homeserver' ? handleVerifyHomeserver : handleLogin}
               className="space-y-4"
             >
               <div className="space-y-2">
