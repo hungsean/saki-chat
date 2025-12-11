@@ -32,10 +32,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm test:run
-
-      - name: Generate coverage report
+      - name: Run tests with coverage
         run: pnpm test:coverage
 
       - name: Upload coverage reports to Codecov
@@ -44,4 +41,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
-          files: ./coverage/coverage-final.json

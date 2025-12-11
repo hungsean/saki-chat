@@ -10,3 +10,4 @@ const customRender = (
 // 重新匯出常用的測試工具
 export { customRender as render };
 export { screen, waitFor, fireEvent, within } from '@testing-library/react';
+export { default as userEvent } from '@testing-library/user-event';
