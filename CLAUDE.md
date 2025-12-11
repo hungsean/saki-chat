@@ -116,6 +116,10 @@ matrix-client/
 - 元件使用 function component + hooks
 - 檔案命名: camelCase (檔案) / PascalCase (元件)
 
+### 測試撰寫規範
+
+- **務必參考 TESTING.md** 進行測試撰寫
+
 ### Git Commit 規範
 
 - `feat: 新功能`
@@ -157,6 +161,15 @@ pnpm format           # 格式化程式碼
 ```bash
 pnpm tauri dev        # Tauri 開發模式
 pnpm tauri build      # 打包應用程式
+```
+
+### 測試
+
+```bash
+pnpm test              # 測試(監看模式)
+pnpm test:ui           # 測試 UI 介面
+pnpm test:run          # 執行一次測試
+pnpm test:coverage     # 生成覆蓋率報告
 ```
 
 ---

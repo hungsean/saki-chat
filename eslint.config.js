@@ -58,8 +58,8 @@ export default [
     },
   },
   {
-    // Node.js 環境配置 (vite.config.ts, scripts/)
-    files: ['vite.config.ts', 'scripts/**/*.js', '*.config.js'],
+    // Node.js 環境配置 (config 檔案, scripts/)
+    files: ['vite.config.ts', '*.config.{js,ts}', 'scripts/**/*.js'],
     languageOptions: {
       globals: {
         process: 'readonly',
@@ -69,6 +69,28 @@ export default [
         require: 'readonly',
         module: 'readonly',
         exports: 'readonly',
+      },
+    },
+  },
+  {
+    // Vitest 測試檔案環境配置
+    files: ['**/*.test.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        test: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        global: 'readonly',
+        NotificationPermission: 'readonly',
       },
     },
   },
