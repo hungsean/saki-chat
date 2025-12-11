@@ -91,16 +91,14 @@ class MockIDBObjectStore {
 class MockIDBTransaction {
   private stores: Map<string, Map<string, unknown>>;
   private storeNames: string[];
-  private mode: 'readonly' | 'readwrite';
 
   constructor(
     stores: Map<string, Map<string, unknown>>,
     storeNames: string[],
-    mode: 'readonly' | 'readwrite'
+    _mode: 'readonly' | 'readwrite'
   ) {
     this.stores = stores;
     this.storeNames = storeNames;
-    this.mode = mode;
   }
 
   objectStore(name: string): MockIDBObjectStore {
@@ -237,8 +235,8 @@ export const mockIDB = {
  * 在測試環境中設定全域 indexedDB
  */
 export function setupMockIndexedDB(): void {
-  if (typeof global !== 'undefined') {
-    (global as unknown as { indexedDB: typeof mockIndexedDB }).indexedDB =
+  if (typeof globalThis !== 'undefined') {
+    (globalThis as unknown as { indexedDB: typeof mockIndexedDB }).indexedDB =
       mockIndexedDB;
   }
 }
