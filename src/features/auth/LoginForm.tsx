@@ -38,13 +38,15 @@ export function LoginForm() {
         setBaseUrl(result.baseUrl);
         setStep('credentials');
       } else {
-        setError(result.error || 'Verification failed. Please check the homeserver URL');
+        setError(
+          result.error || 'Verification failed. Please check the homeserver URL'
+        );
       }
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : 'Verification failed. Please check the homeserver URL',
+          : 'Verification failed. Please check the homeserver URL'
       );
     } finally {
       setIsVerifying(false);
@@ -66,7 +68,13 @@ export function LoginForm() {
         password,
       });
 
-      if (result.success && result.accessToken && result.userId && result.deviceId && result.homeServer) {
+      if (
+        result.success &&
+        result.accessToken &&
+        result.userId &&
+        result.deviceId &&
+        result.homeServer
+      ) {
         const authData = {
           userId: result.userId,
           accessToken: result.accessToken,
@@ -84,13 +92,13 @@ export function LoginForm() {
         // Navigate to success page
         navigate('/success');
       } else {
-        setError(result.error || 'Login failed. Please check your credentials.');
+        setError(
+          result.error || 'Login failed. Please check your credentials.'
+        );
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Login failed. Please try again.',
+        err instanceof Error ? err.message : 'Login failed. Please try again.'
       );
     } finally {
       setIsLoggingIn(false);
@@ -110,19 +118,25 @@ export function LoginForm() {
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold">Saki Chat</h1>
-            <p className="text-muted-foreground">Sign in to your Matrix account</p>
+            <p className="text-muted-foreground">
+              Sign in to your Matrix account
+            </p>
           </div>
 
           <div className="space-y-4">
             <form
-              onSubmit={step === 'homeserver' ? handleVerifyHomeserver : handleLogin}
+              onSubmit={
+                step === 'homeserver' ? handleVerifyHomeserver : handleLogin
+              }
               className="space-y-4"
             >
               <div className="space-y-2">
                 <label
                   htmlFor="homeserver"
                   className={`text-sm font-medium transition-all ${
-                    step === 'credentials' ? 'text-xs text-muted-foreground' : ''
+                    step === 'credentials'
+                      ? 'text-xs text-muted-foreground'
+                      : ''
                   }`}
                 >
                   Homeserver
@@ -199,7 +213,11 @@ export function LoginForm() {
                   >
                     Back
                   </Button>
-                  <Button type="submit" className="flex-1" disabled={isLoggingIn}>
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={isLoggingIn}
+                  >
                     {isLoggingIn ? 'Logging in...' : 'Login'}
                   </Button>
                 </div>

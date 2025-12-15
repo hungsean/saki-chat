@@ -23,7 +23,9 @@ let store: Store | null = null;
  */
 async function getStore(): Promise<Store> {
   if (!store) {
-    console.log('[authStorage] Initializing Tauri Store...', { file: STORE_FILE });
+    console.log('[authStorage] Initializing Tauri Store...', {
+      file: STORE_FILE,
+    });
     store = await Store.load(STORE_FILE);
     console.log('[authStorage] ✓ Tauri Store initialized');
   }
@@ -55,7 +57,9 @@ export async function loadAuthData(): Promise<StoredAuthData | null> {
     const s = await getStore();
     const data = await s.get<StoredAuthData>(AUTH_KEY);
     if (data) {
-      console.log('[authStorage] ✓ Auth data loaded successfully', { userId: data.userId });
+      console.log('[authStorage] ✓ Auth data loaded successfully', {
+        userId: data.userId,
+      });
     } else {
       console.log('[authStorage] ⓘ No auth data found');
     }

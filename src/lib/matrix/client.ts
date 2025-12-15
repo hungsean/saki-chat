@@ -25,7 +25,7 @@ export interface LoginResult {
  * @param credentials - Login credentials with verified baseUrl
  */
 export async function loginToMatrix(
-  credentials: LoginCredentials,
+  credentials: LoginCredentials
 ): Promise<LoginResult> {
   try {
     // Create a temporary client for login using the verified base URL
@@ -64,7 +64,7 @@ export async function loginToMatrix(
 export async function createMatrixClient(
   baseUrl: string,
   accessToken: string,
-  userId: string,
+  userId: string
 ): Promise<sdk.MatrixClient> {
   const client = sdk.createClient({
     baseUrl,
@@ -82,7 +82,7 @@ export async function createMatrixClient(
  * Logout from Matrix
  */
 export async function logoutFromMatrix(
-  client: sdk.MatrixClient,
+  client: sdk.MatrixClient
 ): Promise<void> {
   try {
     await client.logout();

@@ -78,5 +78,5 @@ export const useAuthStore = create<AuthState>()(
         state.baseUrl = null;
         state.client = null;
       }),
-  })),
+  }))
 );

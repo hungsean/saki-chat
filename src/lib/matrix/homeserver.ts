@@ -25,7 +25,7 @@ export function normalizeHomeserverUrl(input: string): string {
  * Verify homeserver by checking .well-known/matrix/client endpoint
  */
 export async function verifyHomeserver(
-  homeserverUrl: string,
+  homeserverUrl: string
 ): Promise<HomeserverVerificationResult> {
   const normalizedUrl = normalizeHomeserverUrl(homeserverUrl);
 
