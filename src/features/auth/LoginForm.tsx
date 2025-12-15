@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -6,15 +7,22 @@ import {
   verifyHomeserver,
   extractHomeserverDomain,
 } from '@/lib/matrix/homeserver';
+import { loginToMatrix } from '@/lib/matrix/client';
+import { useAuthStore } from '@/stores/authStore';
 
 type LoginStep = 'homeserver' | 'credentials';
 
 export function LoginForm() {
+  const navigate = useNavigate();
+  const setAuthData = useAuthStore((state) => state.setAuthData);
+
   const [step, setStep] = useState<LoginStep>('homeserver');
   const [homeserver, setHomeserver] = useState('matrix.org');
+  const [baseUrl, setBaseUrl] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
 
   const handleVerifyHomeserver = async (e: React.FormEvent) => {
@@ -25,7 +33,8 @@ export function LoginForm() {
     try {
       const result = await verifyHomeserver(homeserver);
 
-      if (result.isValid) {
+      if (result.isValid && result.baseUrl) {
+        setBaseUrl(result.baseUrl);
         setStep('credentials');
       } else {
         setError(result.error || 'Verification failed. Please check the homeserver URL');
@@ -44,9 +53,42 @@ export function LoginForm() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const domain = extractHomeserverDomain(homeserver);
-    const fullUsername = `@${username}:${domain}`;
-    console.log('Login:', { homeserver, username: fullUsername, password });
+    setIsLoggingIn(true);
+
+    try {
+      const domain = extractHomeserverDomain(homeserver);
+      const fullUsername = `@${username}:${domain}`;
+
+      const result = await loginToMatrix({
+        baseUrl,
+        username: fullUsername,
+        password,
+      });
+
+      if (result.success && result.accessToken && result.userId && result.deviceId && result.homeServer) {
+        // Store authentication data
+        setAuthData({
+          userId: result.userId,
+          accessToken: result.accessToken,
+          deviceId: result.deviceId,
+          homeServer: result.homeServer,
+          baseUrl,
+        });
+
+        // Navigate to success page
+        navigate('/success');
+      } else {
+        setError(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Login failed. Please try again.',
+      );
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleBack = () => {
@@ -147,11 +189,12 @@ export function LoginForm() {
                     variant="outline"
                     onClick={handleBack}
                     className="flex-1"
+                    disabled={isLoggingIn}
                   >
                     Back
                   </Button>
-                  <Button type="submit" className="flex-1">
-                    Login
+                  <Button type="submit" className="flex-1" disabled={isLoggingIn}>
+                    {isLoggingIn ? 'Logging in...' : 'Login'}
                   </Button>
                 </div>
               )}
