@@ -8,7 +8,8 @@ import {
   extractHomeserverDomain,
 } from '@/lib/matrix/homeserver';
 import { loginToMatrix } from '@/lib/matrix/client';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/lib/stores/zustand/authStore';
+import { saveAuthData } from '@/lib/stores/tauri/authStorage';
 
 type LoginStep = 'homeserver' | 'credentials';
 
@@ -66,14 +67,19 @@ export function LoginForm() {
       });
 
       if (result.success && result.accessToken && result.userId && result.deviceId && result.homeServer) {
-        // Store authentication data
-        setAuthData({
+        const authData = {
           userId: result.userId,
           accessToken: result.accessToken,
           deviceId: result.deviceId,
           homeServer: result.homeServer,
           baseUrl,
-        });
+        };
+
+        // Store authentication data in memory
+        setAuthData(authData);
+
+        // Save to Tauri Store for persistence
+        await saveAuthData(authData);
 
         // Navigate to success page
         navigate('/success');
