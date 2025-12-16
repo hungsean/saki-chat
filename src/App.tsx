@@ -11,21 +11,31 @@ function App() {
   const setAuthData = useAuthStore((state) => state.setAuthData);
 
   useEffect(() => {
+    let cancelled = false;
+
     const initializeAuth = async () => {
       try {
         const storedAuth = await loadAuthData();
-        if (storedAuth) {
+        if (!cancelled && storedAuth) {
           // Restore authentication state
           setAuthData(storedAuth);
         }
       } catch (error) {
-        console.error('Failed to load stored auth:', error);
+        if (!cancelled) {
+          console.error('Failed to load stored auth:', error);
+        }
       } finally {
-        setIsInitializing(false);
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
       }
     };
 
     initializeAuth();
+
+    return () => {
+      cancelled = true;
+    };
   }, [setAuthData]);
 
   if (isInitializing) {

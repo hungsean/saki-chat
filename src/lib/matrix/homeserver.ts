@@ -57,10 +57,25 @@ export async function verifyHomeserver(
       normalizedUrl,
     };
   } catch (err) {
+    let errorMessage = 'Verification failed';
+
+    if (err instanceof Error) {
+      if (
+        err.message.includes('fetch') ||
+        err.message.includes('network') ||
+        err.message.includes('Failed to fetch')
+      ) {
+        errorMessage =
+          'Cannot connect to homeserver. Please check your internet connection.';
+      } else {
+        errorMessage = err.message;
+      }
+    }
+
     return {
       isValid: false,
       normalizedUrl,
-      error: err instanceof Error ? err.message : 'Verification failed',
+      error: errorMessage,
     };
   }
 }

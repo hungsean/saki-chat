@@ -60,6 +60,7 @@ export async function loginToMatrix(
 
 /**
  * Create and initialize Matrix client with stored credentials
+ * @throws {Error} If client initialization or sync fails
  */
 export async function createMatrixClient(
   baseUrl: string,
@@ -72,10 +73,14 @@ export async function createMatrixClient(
     userId,
   });
 
-  // Start the client
-  await client.startClient({ initialSyncLimit: 10 });
-
-  return client;
+  try {
+    await client.startClient({ initialSyncLimit: 10 });
+    return client;
+  } catch (error) {
+    console.error('Failed to start Matrix client:', error);
+    client.stopClient();
+    throw error;
+  }
 }
 
 /**
