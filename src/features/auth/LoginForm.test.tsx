@@ -415,9 +415,14 @@ describe('LoginForm', () => {
       const user = userEvent.setup();
 
       // Mock sanitizeText 來真正移除 HTML 標籤
-      vi.mocked(sanitizeText).mockImplementation((text) =>
-        text.replace(/<[^>]*>/g, '')
-      );
+      vi.mocked(sanitizeText).mockImplementation((text) => {
+        let prev;
+        do {
+          prev = text;
+          text = text.replace(/<[^>]*>/g, '');
+        } while (text !== prev);
+        return text;
+      });
 
       const htmlError = '<b>Error:</b> <a href="#">Click here</a>';
       mockVerifyHomeserver.mockResolvedValue({
