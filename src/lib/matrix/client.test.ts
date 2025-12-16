@@ -124,6 +124,50 @@ describe('Matrix Client', () => {
       });
       expect(client).toBe(mockClient);
     });
+
+    it('應該在 startClient 失敗時停止客戶端並拋出錯誤', async () => {
+      // Arrange
+      const baseUrl = 'https://matrix.org';
+      const accessToken = 'test_token_123';
+      const userId = '@testuser:matrix.org';
+      const errorMessage = 'Sync failed';
+      mockClient.startClient.mockRejectedValue(new Error(errorMessage));
+      mockClient.stopClient.mockReturnValue(undefined);
+
+      // Act & Assert
+      await expect(
+        createMatrixClient(baseUrl, accessToken, userId)
+      ).rejects.toThrow(errorMessage);
+
+      // Verify that stopClient was called even though startClient failed
+      expect(mockClient.stopClient).toHaveBeenCalled();
+    });
+
+    it('應該記錄錯誤當 startClient 失敗', async () => {
+      // Arrange
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      const baseUrl = 'https://matrix.org';
+      const accessToken = 'test_token_123';
+      const userId = '@testuser:matrix.org';
+      const testError = new Error('Network error during sync');
+      mockClient.startClient.mockRejectedValue(testError);
+      mockClient.stopClient.mockReturnValue(undefined);
+
+      // Act & Assert
+      await expect(
+        createMatrixClient(baseUrl, accessToken, userId)
+      ).rejects.toThrow('Network error during sync');
+
+      // Verify error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to start Matrix client:',
+        testError
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe('logoutFromMatrix', () => {

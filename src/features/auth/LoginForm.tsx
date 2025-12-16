@@ -10,6 +10,7 @@ import {
 import { loginToMatrix } from '@/lib/matrix/client';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { saveAuthData } from '@/lib/stores/tauri/authStorage';
+import { sanitizeText } from '@/lib/utils/sanitize';
 
 type LoginStep = 'homeserver' | 'credentials';
 
@@ -227,7 +228,8 @@ export function LoginForm() {
                   role="alert"
                   className="text-sm text-destructive bg-destructive/10 p-3 rounded-md"
                 >
-                  {error}
+                  {/* XSS Protection: Sanitize error messages from server */}
+                  {sanitizeText(error)}
                 </div>
               )}
 

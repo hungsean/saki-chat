@@ -159,4 +159,108 @@ describe('verifyHomeserver', () => {
       'https://matrix.org/.well-known/matrix/client'
     );
   });
+
+  describe('Edge Cases', () => {
+    it('應該處理帶有 trailing slash 的 URL', async () => {
+      const mockResponse = {
+        'm.homeserver': {
+          base_url: 'https://matrix-client.matrix.org',
+        },
+      };
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      // Note: trailing slash is currently NOT removed by normalizeHomeserverUrl
+      // This test documents the current behavior
+      const result = await verifyHomeserver('matrix.org/');
+
+      expect(result.isValid).toBe(true);
+      expect(result.normalizedUrl).toBe('https://matrix.org/');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://matrix.org//.well-known/matrix/client'
+      );
+    });
+
+    it('應該處理包含 Unicode 字元的 homeserver', async () => {
+      // Test with internationalized domain name (IDN)
+      // Example: "中文.com" (Chinese characters)
+      const unicodeHomeserver = '中文.com';
+
+      mockFetch.mockResolvedValue({
+        ok: false,
+      });
+
+      const result = await verifyHomeserver(unicodeHomeserver);
+
+      // Should handle unicode without throwing error
+      expect(result.isValid).toBe(false);
+      expect(result.normalizedUrl).toBe(`https://${unicodeHomeserver}`);
+      expect(result.error).toBe('Cannot connect to homeserver');
+    });
+
+    it('應該正確處理非常長的錯誤訊息', async () => {
+      const longErrorMessage = 'A'.repeat(1000); // 1000 characters long error
+      mockFetch.mockRejectedValue(new Error(longErrorMessage));
+
+      const result = await verifyHomeserver('matrix.org');
+
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe(longErrorMessage);
+      // Error message should be preserved in full
+      expect(result.error?.length).toBe(1000);
+    });
+
+    it('應該處理包含多個斜線的 URL', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+      });
+
+      const result = await verifyHomeserver('matrix.org//');
+
+      expect(result.isValid).toBe(false);
+      expect(result.normalizedUrl).toBe('https://matrix.org//');
+    });
+
+    it('應該處理空格字元', async () => {
+      const mockResponse = {
+        'm.homeserver': {
+          base_url: 'https://matrix-client.matrix.org',
+        },
+      };
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const result = await verifyHomeserver('  matrix.org  ');
+
+      // Spaces should be trimmed
+      expect(result.normalizedUrl).toBe('https://matrix.org');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://matrix.org/.well-known/matrix/client'
+      );
+    });
+
+    it('應該處理包含 port 和 path 的複雜 URL', async () => {
+      const mockResponse = {
+        'm.homeserver': {
+          base_url: 'https://matrix-client.example.com:8448',
+        },
+      };
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const result = await verifyHomeserver('example.com:8448/path');
+
+      expect(result.isValid).toBe(true);
+      expect(result.normalizedUrl).toBe('https://example.com:8448/path');
+    });
+  });
 });

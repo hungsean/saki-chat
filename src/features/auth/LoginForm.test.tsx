@@ -42,6 +42,11 @@ vi.mock('@/lib/stores/zustand/authStore', () => ({
   }),
 }));
 
+// Mock sanitize utilities
+vi.mock('@/lib/utils/sanitize', () => ({
+  sanitizeText: vi.fn((text) => text), // Default: pass through
+}));
+
 describe('LoginForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -340,6 +345,157 @@ describe('LoginForm', () => {
 
       // 錯誤訊息應該被清除
       expect(screen.queryByText('Test error')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('XSS 防護', () => {
+    it('應該對 homeserver 驗證錯誤訊息進行 sanitize', async () => {
+      const { sanitizeText } = await import('@/lib/utils/sanitize');
+      const user = userEvent.setup();
+      const maliciousError = '<script>alert("XSS")</script>Cannot connect';
+
+      mockVerifyHomeserver.mockResolvedValue({
+        isValid: false,
+        normalizedUrl: 'https://invalid.com',
+        error: maliciousError,
+      });
+
+      render(<LoginForm />);
+
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+      await user.click(nextButton);
+
+      await waitFor(() => {
+        expect(sanitizeText).toHaveBeenCalledWith(maliciousError);
+      });
+    });
+
+    it('應該對登入錯誤訊息進行 sanitize', async () => {
+      const { sanitizeText } = await import('@/lib/utils/sanitize');
+      const user = userEvent.setup();
+      const maliciousError = '<img src=x onerror=alert(1)>Invalid password';
+
+      // 先完成第一步
+      mockVerifyHomeserver.mockResolvedValue({
+        isValid: true,
+        baseUrl: 'https://matrix-client.matrix.org',
+        normalizedUrl: 'https://matrix.org',
+      });
+
+      render(<LoginForm />);
+
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+      await user.click(nextButton);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Username')).toBeInTheDocument();
+      });
+
+      // 登入失敗並回傳惡意錯誤訊息
+      mockLoginToMatrix.mockResolvedValue({
+        success: false,
+        error: maliciousError,
+      });
+
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      const loginButton = screen.getByRole('button', { name: 'Login' });
+
+      await user.type(usernameInput, 'testuser');
+      await user.type(passwordInput, 'password123');
+      await user.click(loginButton);
+
+      await waitFor(() => {
+        expect(sanitizeText).toHaveBeenCalledWith(maliciousError);
+      });
+    });
+
+    it('應該移除錯誤訊息中的 HTML 標籤', async () => {
+      const { sanitizeText } = await import('@/lib/utils/sanitize');
+      const user = userEvent.setup();
+
+      // Mock sanitizeText 來真正移除 HTML 標籤
+      vi.mocked(sanitizeText).mockImplementation((text) =>
+        text.replace(/<[^>]*>/g, '')
+      );
+
+      const htmlError = '<b>Error:</b> <a href="#">Click here</a>';
+      mockVerifyHomeserver.mockResolvedValue({
+        isValid: false,
+        normalizedUrl: 'https://invalid.com',
+        error: htmlError,
+      });
+
+      render(<LoginForm />);
+
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+      await user.click(nextButton);
+
+      await waitFor(() => {
+        // sanitizeText 應該被呼叫
+        expect(sanitizeText).toHaveBeenCalledWith(htmlError);
+
+        // 應該顯示清理過的訊息 (沒有 HTML 標籤)
+        expect(screen.getByText('Error: Click here')).toBeInTheDocument();
+        // 不應該有 HTML 元素
+        expect(screen.queryByRole('link')).not.toBeInTheDocument();
+      });
+    });
+
+    it('應該處理空的錯誤訊息', async () => {
+      const { sanitizeText } = await import('@/lib/utils/sanitize');
+      const user = userEvent.setup();
+
+      mockVerifyHomeserver.mockResolvedValue({
+        isValid: false,
+        normalizedUrl: 'https://invalid.com',
+        error: '',
+      });
+
+      render(<LoginForm />);
+
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+      await user.click(nextButton);
+
+      await waitFor(() => {
+        // 當 error 為空字串時,會使用預設錯誤訊息
+        expect(sanitizeText).toHaveBeenCalledWith(
+          'Verification failed. Please check the homeserver URL'
+        );
+      });
+
+      // 應該顯示預設錯誤訊息
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(
+        screen.getByText('Verification failed. Please check the homeserver URL')
+      ).toBeInTheDocument();
+    });
+
+    it('應該處理非常長的錯誤訊息', async () => {
+      const { sanitizeText } = await import('@/lib/utils/sanitize');
+      const user = userEvent.setup();
+      const longError = 'Error: '.repeat(100); // 非常長的錯誤訊息
+
+      mockVerifyHomeserver.mockResolvedValue({
+        isValid: false,
+        normalizedUrl: 'https://invalid.com',
+        error: longError,
+      });
+
+      render(<LoginForm />);
+
+      const nextButton = screen.getByRole('button', { name: 'Next' });
+      await user.click(nextButton);
+
+      await waitFor(() => {
+        expect(sanitizeText).toHaveBeenCalledWith(longError);
+      });
+
+      // 應該顯示錯誤訊息 (檢查部分內容即可)
+      const alertElement = screen.getByRole('alert');
+      expect(alertElement).toBeInTheDocument();
+      // 檢查錯誤訊息是否包含預期的內容
+      expect(alertElement.textContent).toContain('Error: Error: Error:');
     });
   });
 });
