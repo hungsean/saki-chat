@@ -12,13 +12,15 @@ vi.mock('matrix-js-sdk', () => ({
   createClient: vi.fn(),
 }));
 
+type MockMatrixClient = {
+  login: ReturnType<typeof vi.fn>;
+  startClient: ReturnType<typeof vi.fn>;
+  stopClient: ReturnType<typeof vi.fn>;
+  logout: ReturnType<typeof vi.fn>;
+};
+
 describe('Matrix Client', () => {
-  let mockClient: {
-    login: ReturnType<typeof vi.fn>;
-    startClient: ReturnType<typeof vi.fn>;
-    stopClient: ReturnType<typeof vi.fn>;
-    logout: ReturnType<typeof vi.fn>;
-  };
+  let mockClient: MockMatrixClient;
 
   beforeEach(() => {
     // 建立 mock 客戶端
@@ -30,7 +32,9 @@ describe('Matrix Client', () => {
     };
 
     // Mock createClient 回傳 mock 客戶端
-    vi.mocked(sdk.createClient).mockReturnValue(mockClient as any);
+    vi.mocked(sdk.createClient).mockReturnValue(
+      mockClient as unknown as sdk.MatrixClient
+    );
   });
 
   describe('loginToMatrix', () => {
@@ -129,7 +133,7 @@ describe('Matrix Client', () => {
       mockClient.stopClient.mockReturnValue(undefined);
 
       // Act
-      await logoutFromMatrix(mockClient as any);
+      await logoutFromMatrix(mockClient as unknown as sdk.MatrixClient);
 
       // Assert
       expect(mockClient.logout).toHaveBeenCalled();
@@ -143,7 +147,7 @@ describe('Matrix Client', () => {
       mockClient.stopClient.mockReturnValue(undefined);
 
       // Act
-      await logoutFromMatrix(mockClient as any);
+      await logoutFromMatrix(mockClient as unknown as sdk.MatrixClient);
 
       // Assert
       expect(mockClient.logout).toHaveBeenCalled();

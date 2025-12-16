@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from './authStore';
+import type { MatrixClient } from 'matrix-js-sdk';
 
 describe('authStore', () => {
   beforeEach(() => {
@@ -86,7 +87,7 @@ describe('authStore', () => {
   describe('setClient', () => {
     it('應該設定 Matrix client', () => {
       const { setClient } = useAuthStore.getState();
-      const mockClient = { test: 'mock-client' } as any;
+      const mockClient = { test: 'mock-client' } as unknown as MatrixClient;
 
       setClient(mockClient);
 
@@ -96,8 +97,8 @@ describe('authStore', () => {
 
     it('應該可以更新現有的 client', () => {
       const { setClient } = useAuthStore.getState();
-      const mockClient1 = { id: 1 } as any;
-      const mockClient2 = { id: 2 } as any;
+      const mockClient1 = { id: 1 } as unknown as MatrixClient;
+      const mockClient2 = { id: 2 } as unknown as MatrixClient;
 
       setClient(mockClient1);
       expect(useAuthStore.getState().client).toBe(mockClient1);
@@ -141,7 +142,7 @@ describe('authStore', () => {
         homeServer: 'matrix.org',
         baseUrl: 'https://matrix.org',
       });
-      setClient({ test: 'client' } as any);
+      setClient({ test: 'client' } as unknown as MatrixClient);
 
       // 確認資料已設定
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
@@ -196,7 +197,7 @@ describe('authStore', () => {
       });
 
       // 設定 client
-      setClient({ test: 'client' } as any);
+      setClient({ test: 'client' } as unknown as MatrixClient);
 
       // 完成登入
       setLoading(false);

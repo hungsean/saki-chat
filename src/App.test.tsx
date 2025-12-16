@@ -94,7 +94,9 @@ describe('App', () => {
 
     it('應該處理載入認證資料失敗的情況', async () => {
       // Arrange
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(noop);
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(noop);
       const error = new Error('Failed to load auth data');
       vi.mocked(authStorage.loadAuthData).mockRejectedValue(error);
 

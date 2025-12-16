@@ -8,7 +8,13 @@ describe('cn', () => {
   });
 
   it('應該處理條件式 class', () => {
-    const result = cn('base-class', true && 'active', false && 'disabled');
+    const isActive = true;
+    const isDisabled = false;
+    const result = cn(
+      'base-class',
+      isActive && 'active',
+      isDisabled && 'disabled'
+    );
     expect(result).toBe('base-class active');
   });
 
@@ -27,7 +33,7 @@ describe('cn', () => {
     const result = cn({
       'text-red-500': true,
       'bg-blue-500': false,
-      'border': true,
+      border: true,
     });
     expect(result).toBe('text-red-500 border');
   });
@@ -38,13 +44,16 @@ describe('cn', () => {
   });
 
   it('應該處理混合格式', () => {
+    const isConditional = true;
     const result = cn(
       'base-class',
       ['array-class'],
       { 'object-class': true },
-      true && 'conditional-class'
+      isConditional && 'conditional-class'
     );
-    expect(result).toBe('base-class array-class object-class conditional-class');
+    expect(result).toBe(
+      'base-class array-class object-class conditional-class'
+    );
   });
 
   it('應該處理空輸入', () => {

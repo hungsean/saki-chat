@@ -25,7 +25,12 @@ export default [
         document: 'readonly',
         window: 'readonly',
         HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
         navigator: 'readonly',
+        console: 'readonly',
+        fetch: 'readonly',
+        // React 相關
+        React: 'readonly',
       },
     },
     plugins: {

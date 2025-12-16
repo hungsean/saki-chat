@@ -94,9 +94,7 @@ describe('LoginForm', () => {
       // 應該顯示第二步的輸入欄位
       expect(screen.getByLabelText('Username')).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: 'Login' })
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
     });
 

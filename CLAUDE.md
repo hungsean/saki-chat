@@ -223,6 +223,7 @@ pnpm test:coverage     # 生成覆蓋率報告
 ## 其他備註
 
 - 預設情況下請使用英文作為軟體的顯示語言
+- 更動過程式後，請使用pnpm lint, pnpm type-check 來確認是否有lint錯誤
 
 ## 相關資源
 
