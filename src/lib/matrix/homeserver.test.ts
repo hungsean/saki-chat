@@ -59,7 +59,7 @@ describe('verifyHomeserver', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    global.fetch = mockFetch;
+    vi.stubGlobal('fetch', mockFetch);
   });
 
   it('應該成功驗證有效的 homeserver', async () => {
