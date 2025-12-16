@@ -37,6 +37,7 @@ async function getStore(): Promise<Store> {
  */
 export async function saveAuthData(data: StoredAuthData): Promise<void> {
   try {
+    // ⚠️ SECURITY: Never log accessToken or other sensitive credentials
     console.log('[authStorage] Saving auth data...', { userId: data.userId });
     const s = await getStore();
     await s.set(AUTH_KEY, data);
@@ -44,7 +45,8 @@ export async function saveAuthData(data: StoredAuthData): Promise<void> {
     console.log('[authStorage] ✓ Auth data saved successfully');
   } catch (error) {
     console.error('[authStorage] ✗ Failed to save auth data:', error);
-    throw new Error('Failed to save authentication data');
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to save authentication data: ${errorMessage}`);
   }
 }
 
@@ -57,6 +59,7 @@ export async function loadAuthData(): Promise<StoredAuthData | null> {
     const s = await getStore();
     const data = await s.get<StoredAuthData>(AUTH_KEY);
     if (data) {
+      // ⚠️ SECURITY: Never log accessToken or other sensitive credentials
       console.log('[authStorage] ✓ Auth data loaded successfully', {
         userId: data.userId,
       });
@@ -82,7 +85,8 @@ export async function clearAuthData(): Promise<void> {
     console.log('[authStorage] ✓ Auth data cleared successfully');
   } catch (error) {
     console.error('[authStorage] ✗ Failed to clear auth data:', error);
-    throw new Error('Failed to clear authentication data');
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to clear authentication data: ${errorMessage}`);
   }
 }
 

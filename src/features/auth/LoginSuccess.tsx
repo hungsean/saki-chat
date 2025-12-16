@@ -7,10 +7,30 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { clearAuthData } from '@/lib/stores/tauri/authStorage';
 import { Button } from '@/components/ui/button';
+import {
+  sanitizeText,
+  isValidMatrixUserId,
+  isValidHomeserverDomain,
+} from '@/lib/utils/sanitize';
 
 export function LoginSuccess() {
   const navigate = useNavigate();
   const { userId, homeServer, clearAuth } = useAuthStore();
+
+  // Sanitize user data for display (XSS protection)
+  const safeUserId = sanitizeText(userId || '');
+  const safeHomeServer = sanitizeText(homeServer || '');
+
+  // Validate format (log warning if invalid, but don't break the UI)
+  if (userId && !isValidMatrixUserId(userId)) {
+    console.warn('[LoginSuccess] Invalid Matrix User ID format:', userId);
+  }
+  if (homeServer && !isValidHomeserverDomain(homeServer)) {
+    console.warn(
+      '[LoginSuccess] Invalid homeserver domain format:',
+      homeServer
+    );
+  }
 
   const handleLogout = async () => {
     try {
@@ -40,13 +60,15 @@ export function LoginSuccess() {
           <div className="bg-muted/50 p-4 rounded-lg space-y-2 text-left">
             <div>
               <span className="text-sm text-muted-foreground">User ID:</span>
-              <p className="font-mono text-sm break-all">{userId}</p>
+              {/* XSS Protection: Display sanitized user ID */}
+              <p className="font-mono text-sm break-all">{safeUserId}</p>
             </div>
             <div>
               <span className="text-sm text-muted-foreground">
                 Home Server:
               </span>
-              <p className="font-mono text-sm break-all">{homeServer}</p>
+              {/* XSS Protection: Display sanitized homeserver */}
+              <p className="font-mono text-sm break-all">{safeHomeServer}</p>
             </div>
           </div>
 

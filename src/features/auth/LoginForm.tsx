@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,18 @@ export function LoginForm() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
 
+  // Clear password on component unmount for security
+  useEffect(() => {
+    return () => {
+      setPassword('');
+    };
+  }, []);
+
+  // Helper: Handle error display
+  const displayError = (err: unknown, defaultMessage: string) => {
+    setError(err instanceof Error ? err.message : defaultMessage);
+  };
+
   const handleVerifyHomeserver = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -43,11 +55,7 @@ export function LoginForm() {
         );
       }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Verification failed. Please check the homeserver URL'
-      );
+      displayError(err, 'Verification failed. Please check the homeserver URL');
     } finally {
       setIsVerifying(false);
     }
@@ -69,37 +77,36 @@ export function LoginForm() {
       });
 
       if (
-        result.success &&
-        result.accessToken &&
-        result.userId &&
-        result.deviceId &&
-        result.homeServer
+        !result.success ||
+        !result.accessToken ||
+        !result.userId ||
+        !result.deviceId ||
+        !result.homeServer
       ) {
-        const authData = {
-          userId: result.userId,
-          accessToken: result.accessToken,
-          deviceId: result.deviceId,
-          homeServer: result.homeServer,
-          baseUrl,
-        };
-
-        // Store authentication data in memory
-        setAuthData(authData);
-
-        // Save to Tauri Store for persistence
-        await saveAuthData(authData);
-
-        // Navigate to success page
-        navigate('/success');
-      } else {
         setError(
           result.error || 'Login failed. Please check your credentials.'
         );
+        return;
       }
+
+      const authData = {
+        userId: result.userId,
+        accessToken: result.accessToken,
+        deviceId: result.deviceId,
+        homeServer: result.homeServer,
+        baseUrl,
+      };
+
+      // Store authentication data in memory
+      setAuthData(authData);
+
+      // Save to Tauri Store for persistence
+      await saveAuthData(authData);
+
+      // Navigate to success page
+      navigate('/success');
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Login failed. Please try again.'
-      );
+      displayError(err, 'Login failed. Please try again.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -149,6 +156,12 @@ export function LoginForm() {
                   onChange={(e) => setHomeserver(e.target.value)}
                   disabled={step === 'credentials'}
                   required
+                  aria-invalid={!!error && step === 'homeserver'}
+                  aria-describedby={
+                    error && step === 'homeserver'
+                      ? 'homeserver-error'
+                      : undefined
+                  }
                   className={`transition-all ${
                     step === 'credentials' ? 'opacity-60' : ''
                   }`}
@@ -174,6 +187,12 @@ export function LoginForm() {
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={step === 'homeserver'}
                     required={step === 'credentials'}
+                    aria-invalid={!!error && step === 'credentials'}
+                    aria-describedby={
+                      error && step === 'credentials'
+                        ? 'credentials-error'
+                        : undefined
+                    }
                   />
                 </div>
 
@@ -188,12 +207,26 @@ export function LoginForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={step === 'homeserver'}
                     required={step === 'credentials'}
+                    aria-invalid={!!error && step === 'credentials'}
+                    aria-describedby={
+                      error && step === 'credentials'
+                        ? 'credentials-error'
+                        : undefined
+                    }
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                <div
+                  id={
+                    step === 'homeserver'
+                      ? 'homeserver-error'
+                      : 'credentials-error'
+                  }
+                  role="alert"
+                  className="text-sm text-destructive bg-destructive/10 p-3 rounded-md"
+                >
                   {error}
                 </div>
               )}
