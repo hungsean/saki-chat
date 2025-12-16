@@ -38,6 +38,11 @@ class MockStore {
     return key in this.data;
   }
 
+  async save(): Promise<void> {
+    // Mock save - 在實際的 Tauri Store 中會持久化資料
+    // 在測試中我們不需要做任何事,資料已經在記憶體中了
+  }
+
   // 測試用的輔助方法
   __reset(): void {
     this.data = {};
