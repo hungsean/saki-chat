@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { clearAuthData } from '@/lib/stores/tauri/authStorage';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import {
   sanitizeText,
   isValidMatrixUserId,
@@ -47,6 +48,11 @@ export function LoginSuccess() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      {/* Theme Toggle - Top Right */}
+      <div className="fixed top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
         <div className="space-y-6 text-center">
           <div className="space-y-2">
