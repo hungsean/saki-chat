@@ -104,6 +104,9 @@ export function LoginForm() {
       // Save to Tauri Store for persistence
       await saveAuthData(authData);
 
+      // Clear password immediately after successful login for security
+      setPassword('');
+
       // Navigate to success page
       navigate('/success');
     } catch (err) {

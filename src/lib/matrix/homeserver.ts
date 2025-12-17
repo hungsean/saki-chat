@@ -12,9 +12,10 @@ export interface HomeserverVerificationResult {
 /**
  * Normalize homeserver URL
  * Adds https:// prefix if no protocol is specified
+ * Removes trailing slashes
  */
 export function normalizeHomeserverUrl(input: string): string {
-  const trimmed = input.trim();
+  const trimmed = input.trim().replace(/\/+$/, ''); // Remove trailing slashes
   if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
     return `https://${trimmed}`;
   }

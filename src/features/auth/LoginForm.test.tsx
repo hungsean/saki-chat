@@ -236,6 +236,35 @@ describe('LoginForm', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/success');
     });
 
+    it('應該在登入成功後清除密碼', async () => {
+      const user = userEvent.setup();
+      mockLoginToMatrix.mockResolvedValue({
+        success: true,
+        accessToken: 'test-token',
+        userId: '@testuser:matrix.org',
+        deviceId: 'DEVICEID',
+        homeServer: 'matrix.org',
+      });
+      mockSaveAuthData.mockResolvedValue();
+
+      const usernameInput = screen.getByLabelText('Username');
+      const passwordInput = screen.getByLabelText('Password');
+      const loginButton = screen.getByRole('button', { name: 'Login' });
+
+      await user.type(usernameInput, 'testuser');
+      await user.type(passwordInput, 'password123');
+
+      // 確認密碼已輸入
+      expect(passwordInput).toHaveValue('password123');
+
+      await user.click(loginButton);
+
+      await waitFor(() => {
+        // 密碼應該被清除
+        expect(passwordInput).toHaveValue('');
+      });
+    });
+
     it('應該在登入失敗時顯示錯誤訊息', async () => {
       const user = userEvent.setup();
       mockLoginToMatrix.mockResolvedValue({

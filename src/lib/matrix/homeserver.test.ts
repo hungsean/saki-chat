@@ -30,6 +30,16 @@ describe('normalizeHomeserverUrl', () => {
     const result = normalizeHomeserverUrl('matrix.org:8448');
     expect(result).toBe('https://matrix.org:8448');
   });
+
+  it('應該移除 trailing slash', () => {
+    const result = normalizeHomeserverUrl('matrix.org/');
+    expect(result).toBe('https://matrix.org');
+  });
+
+  it('應該移除多個 trailing slashes', () => {
+    const result = normalizeHomeserverUrl('https://matrix.org///');
+    expect(result).toBe('https://matrix.org');
+  });
 });
 
 describe('extractHomeserverDomain', () => {
@@ -173,14 +183,13 @@ describe('verifyHomeserver', () => {
         json: async () => mockResponse,
       });
 
-      // Note: trailing slash is currently NOT removed by normalizeHomeserverUrl
-      // This test documents the current behavior
+      // Trailing slash should be removed by normalizeHomeserverUrl
       const result = await verifyHomeserver('matrix.org/');
 
       expect(result.isValid).toBe(true);
-      expect(result.normalizedUrl).toBe('https://matrix.org/');
+      expect(result.normalizedUrl).toBe('https://matrix.org');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://matrix.org//.well-known/matrix/client'
+        'https://matrix.org/.well-known/matrix/client'
       );
     });
 
@@ -221,7 +230,7 @@ describe('verifyHomeserver', () => {
       const result = await verifyHomeserver('matrix.org//');
 
       expect(result.isValid).toBe(false);
-      expect(result.normalizedUrl).toBe('https://matrix.org//');
+      expect(result.normalizedUrl).toBe('https://matrix.org');
     });
 
     it('應該處理空格字元', async () => {
