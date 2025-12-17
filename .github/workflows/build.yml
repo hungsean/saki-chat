@@ -43,6 +43,7 @@ jobs:
           retention-days: 7
 
   build-tauri:
+    needs: build-frontend
     runs-on: ${{ matrix.platform }}
 
     strategy:

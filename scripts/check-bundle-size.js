@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DIST_PATH = path.join(__dirname, '../dist');
-const MAX_BUNDLE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_BUNDLE_SIZE = 10 * 1024 * 1024; // 10MB (includes matrix-js-sdk WASM ~5.3MB)
 const MAX_JS_SIZE = 3 * 1024 * 1024; // 3MB
 const MAX_CSS_SIZE = 500 * 1024; // 500KB
 

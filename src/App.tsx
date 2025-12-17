@@ -1,53 +1,70 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import { invoke } from '@tauri-apps/api/core';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoginForm } from '@/features/auth/LoginForm';
+import { LoginSuccess } from '@/features/auth/LoginSuccess';
+import { useAuthStore } from '@/lib/stores/zustand/authStore';
+import { loadAuthData } from '@/lib/stores/tauri/authStorage';
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState('');
-  const [name, setName] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const setAuthData = useAuthStore((state) => state.setAuthData);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke('greet', { name }));
+  useEffect(() => {
+    let cancelled = false;
+
+    const initializeAuth = async () => {
+      try {
+        const storedAuth = await loadAuthData();
+        if (!cancelled && storedAuth) {
+          // Restore authentication state
+          setAuthData(storedAuth);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Failed to load stored auth:', error);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setAuthData]);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="text-4xl mb-4">✨</div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank" rel="noreferrer">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/success" /> : <LoginForm />}
         />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-      <div className="flex items-center justify-center bg-blue-500 text-white p-4">
-        Hello Tailwind!
-      </div>
-    </main>
+        <Route
+          path="/success"
+          element={
+            isAuthenticated ? <LoginSuccess /> : <Navigate to="/login" />
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -54,6 +54,10 @@ Saki Chat
 - **date-fns** - 時間處理
 - **lodash-es** - 工具函式
 
+### 安全性工具
+
+- **DOMPurify** - XSS 防護
+
 ### 開發工具
 
 - **ESLint** - 程式碼檢查
@@ -178,9 +182,68 @@ pnpm test:coverage     # 生成覆蓋率報告
 
 ### 安全性
 
+#### 認證與儲存
+
 - Access token 使用 Tauri Store 加密儲存
-- 使用者輸入需要過濾 XSS (DOMPurify)
+- **絕對不要**在 console.log 中記錄敏感資料 (accessToken, password 等)
 - E2EE 訊息使用 matrix-js-sdk 內建加密
+
+#### XSS 防護 (重要!)
+
+本專案使用 **DOMPurify** 進行 XSS 防護，所有顯示用戶生成內容的地方都必須遵守以下規範：
+
+#### 1. 顯示純文字內容
+
+```tsx
+import { sanitizeText } from '@/lib/utils/sanitize';
+
+// ✅ 正確：清理後顯示
+const safeName = sanitizeText(user.displayName);
+<div>{safeName}</div>
+
+// ❌ 錯誤：直接顯示未清理的內容
+<div>{user.displayName}</div>
+```
+
+#### 2. 顯示 HTML 格式內容
+
+```tsx
+import { sanitizeHTML } from '@/lib/utils/sanitize';
+
+// ✅ 正確：清理後使用 dangerouslySetInnerHTML
+const safeHTML = sanitizeHTML(message.formattedBody);
+<div dangerouslySetInnerHTML={{ __html: safeHTML }} />
+
+// ❌ 錯誤：未清理直接使用 dangerouslySetInnerHTML
+<div dangerouslySetInnerHTML={{ __html: message.formattedBody }} />
+```
+
+#### 3. 需要特別注意的內容
+
+以下用戶生成內容**必須**經過清理：
+
+- 用戶暱稱 (displayName)
+- 房間名稱 (room name)
+- 房間主題 (room topic)
+- 訊息內容 (message body)
+- 用戶狀態 (user status)
+- 任何來自 Matrix server 的用戶可控資料
+
+#### 4. 格式驗證
+
+對於有格式規範的資料 (如 User ID)，建議加上驗證：
+
+```tsx
+import { isValidMatrixUserId } from '@/lib/utils/sanitize';
+
+if (!isValidMatrixUserId(userId)) {
+  console.warn('Invalid user ID format:', userId);
+}
+```
+
+#### 開發原則
+
+寧可過度保護，也不要留下安全隱患
 
 ### 效能
 
@@ -219,6 +282,11 @@ pnpm test:coverage     # 生成覆蓋率報告
 - 設定頁面
 
 ---
+
+## 其他備註
+
+- 預設情況下請使用英文作為軟體的顯示語言
+- 更動過程式後，請使用pnpm lint, pnpm type-check 來確認是否有lint錯誤
 
 ## 相關資源
 
