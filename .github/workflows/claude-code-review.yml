@@ -71,6 +71,7 @@ jobs:
             最後用 gh pr comment 留下你的 review。
 
             參考 CLAUDE.md 中的開發規範來評估程式碼。
+            請使用台灣的繁體中文來撰寫 review 。
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
