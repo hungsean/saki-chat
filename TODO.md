@@ -40,6 +40,41 @@
 
 ---
 
+## 🔧 程式碼品質改進
+
+### UX & 錯誤處理
+
+- [ ] 在 App.tsx 初始化時加入 loading 狀態管理
+  - 在 `initializeAuth` 函式中加入 `setLoading(true/false)`
+  - 修復頁面刷新時的 UI 閃爍問題
+  - 嚴重程度: 低-中
+
+- [ ] 改善 LoginForm.tsx 的錯誤處理
+  - 針對不同 Matrix 錯誤碼提供友善訊息 (M_FORBIDDEN, M_USER_DEACTIVATED 等)
+  - 優化 `displayError` 函式邏輯
+  - 嚴重程度: 低
+
+- [ ] 修正 LoginSuccess 按鈕 disabled 狀態的動畫問題
+  - 移除 disabled 狀態時的 hover 動畫
+  - 避免使用者混淆
+  - 優先級: 低
+
+### 測試覆蓋
+
+- [ ] 檢查 client.test.ts 和 authStorage.test.ts 的測試覆蓋
+  - 確認 Matrix SDK mock 是否正確
+  - 確認 Tauri Store mock 是否涵蓋所有情況
+
+### 效能優化
+
+- [ ] 調查使用 dynamic import 延遲載入 Matrix SDK 的可行性
+  - 目前 matrix-js-sdk WASM 約 5.3MB
+  - Bundle size 限制已提升至 10MB
+  - 考慮延遲載入以改善初始載入速度
+  - 優先級: 低
+
+---
+
 ## 📝 注意事項
 
 - saki theme 需要設計符合專案特色的配色方案
