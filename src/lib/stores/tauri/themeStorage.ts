@@ -5,7 +5,7 @@
 
 import { getStore } from './storeManager';
 
-export type ThemeMode = 'system' | 'light' | 'dark' | 'saki';
+export type ThemeMode = 'system' | 'light' | 'dark';
 
 interface StoredThemeData {
   theme: ThemeMode;

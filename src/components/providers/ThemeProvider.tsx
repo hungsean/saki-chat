@@ -47,7 +47,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const root = document.documentElement;
 
     // Remove previous theme classes
-    root.classList.remove('light', 'dark', 'saki');
+    root.classList.remove('light', 'dark');
 
     // Add current theme class
     root.classList.add(resolvedTheme);

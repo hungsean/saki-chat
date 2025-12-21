@@ -109,6 +109,175 @@ export function ThemeShowcase() {
           </CardContent>
         </Card>
 
+        {/* Saki Color Palette */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Saki Color Palette</CardTitle>
+            <CardDescription>
+              Custom pink-themed color palette for Saki theme
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Pink Variants */}
+              <div>
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Pink Variants
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{ backgroundColor: 'var(--color-saki-pink)' }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Core Pink
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-pink
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'var(--color-saki-pink-light)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Light Pink
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-pink-light
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'var(--color-saki-pink-lighter)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Lighter Pink
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-pink-lighter
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'var(--color-saki-pink-subtle)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-foreground">
+                        Subtle Pink
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-pink-subtle
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Background Variants */}
+              <div>
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Background & Surface
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{ backgroundColor: 'var(--color-saki-bg-deep)' }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Deep BG
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-bg-deep
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'var(--color-saki-bg-surface)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Surface
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-bg-surface
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{ backgroundColor: 'var(--color-saki-bg-muted)' }}
+                    >
+                      <span className="text-sm font-medium text-white">
+                        Muted BG
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-bg-muted
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm border border-border flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'var(--color-saki-pink-soft)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-foreground">
+                        Soft Pink
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-pink-soft
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Border */}
+              <div>
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Border
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div
+                      className="h-20 rounded-lg shadow-sm bg-background flex items-center justify-center"
+                      style={{
+                        border: '2px solid var(--color-saki-border)',
+                      }}
+                    >
+                      <span className="text-sm font-medium text-foreground">
+                        Saki Border
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      --color-saki-border
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Buttons */}
         <Card>
           <CardHeader>
