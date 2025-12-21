@@ -9,7 +9,7 @@ import { type ThemeMode, saveTheme, loadTheme } from '../tauri/themeStorage';
 
 export type { ThemeMode };
 
-export type ResolvedTheme = 'light' | 'dark';
+export type ResolvedTheme = 'light' | 'dark' | 'saki';
 
 export interface ThemeState {
   // Current theme mode setting
