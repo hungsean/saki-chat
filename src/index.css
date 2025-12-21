@@ -76,14 +76,14 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
 
   /* Saki Color Palette - Available for use throughout the app */
-  --color-saki-pink: oklch(0.62 0.20 12); /* Core pink #EA4A5B */
-  --color-saki-pink-light: oklch(0.70 0.18 15); /* Light pink #FF7A91 */
+  --color-saki-pink: oklch(0.62 0.2 12); /* Core pink #EA4A5B */
+  --color-saki-pink-light: oklch(0.7 0.18 15); /* Light pink #FF7A91 */
   --color-saki-pink-lighter: oklch(0.75 0.15 20); /* Lighter pink */
   --color-saki-pink-subtle: oklch(0.75 0.12 15); /* Subtle pink */
-  --color-saki-pink-soft: oklch(0.80 0.10 350); /* Soft pink */
+  --color-saki-pink-soft: oklch(0.8 0.1 350); /* Soft pink */
   --color-saki-bg-deep: oklch(0.15 0.01 285); /* Deep purple background */
-  --color-saki-bg-surface: oklch(0.20 0.015 285); /* Surface purple */
-  --color-saki-bg-muted: oklch(0.30 0.03 345); /* Muted pink-grey */
+  --color-saki-bg-surface: oklch(0.2 0.015 285); /* Surface purple */
+  --color-saki-bg-muted: oklch(0.3 0.03 345); /* Muted pink-grey */
   --color-saki-border: oklch(0.38 0.04 340 / 45%); /* Pink-tinted border */
 }
 
