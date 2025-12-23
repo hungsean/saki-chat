@@ -39,7 +39,7 @@ function getSystemTheme(): ResolvedTheme {
 }
 
 export const useThemeStore = create<ThemeState>()(
-  immer((set, get) => ({
+  immer((set) => ({
     // Initial state
     mode: 'system',
     resolvedTheme: getSystemTheme(),
@@ -58,7 +58,9 @@ export const useThemeStore = create<ThemeState>()(
           state.resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
         });
 
-        console.log('[themeStore] Theme updated:', { mode });
+        if (import.meta.env.DEV) {
+          console.log('[themeStore] Theme updated:', { mode });
+        }
       } catch (error) {
         console.error('[themeStore] Failed to set theme:', error);
         throw error;
@@ -75,22 +77,27 @@ export const useThemeStore = create<ThemeState>()(
     // Initialize theme from storage
     initializeTheme: async () => {
       try {
-        console.log('[themeStore] Initializing theme...');
+        if (import.meta.env.DEV) {
+          console.log('[themeStore] Initializing theme...');
+        }
 
         // Load saved theme from storage
         const savedTheme = await loadTheme();
         const mode = savedTheme || 'system';
+        const resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
 
         set((state) => {
           state.mode = mode;
-          state.resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
+          state.resolvedTheme = resolvedTheme;
           state.isInitialized = true;
         });
 
-        console.log('[themeStore] ✓ Theme initialized:', {
-          mode,
-          resolvedTheme: get().resolvedTheme,
-        });
+        if (import.meta.env.DEV) {
+          console.log('[themeStore] ✓ Theme initialized:', {
+            mode,
+            resolvedTheme,
+          });
+        }
       } catch (error) {
         console.error('[themeStore] ✗ Failed to initialize theme:', error);
         // Fallback to default

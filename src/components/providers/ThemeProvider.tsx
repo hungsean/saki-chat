@@ -34,7 +34,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     const handleChange = () => {
       const newTheme = mediaQuery.matches ? 'dark' : 'light';
-      console.log('[ThemeProvider] System theme changed:', newTheme);
+      if (import.meta.env.DEV) {
+        console.log('[ThemeProvider] System theme changed:', newTheme);
+      }
       setResolvedTheme(newTheme);
     };
 
@@ -52,11 +54,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     // Add current theme class
     root.classList.add(resolvedTheme);
 
-    console.log('[ThemeProvider] Theme applied:', {
-      mode,
-      resolvedTheme,
-    });
-  }, [resolvedTheme, mode]);
+    if (import.meta.env.DEV) {
+      console.log('[ThemeProvider] Theme applied:', resolvedTheme);
+    }
+  }, [resolvedTheme]);
 
   return <>{children}</>;
 }

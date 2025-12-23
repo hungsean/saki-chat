@@ -72,9 +72,7 @@ function App() {
           <Route path="/theme" element={<ThemeShowcase />} />
           <Route
             path="*"
-            element={
-              <Navigate to={isAuthenticated ? '/success' : '/login'} />
-            }
+            element={<Navigate to={isAuthenticated ? '/success' : '/login'} />}
           />
         </Routes>
       </BrowserRouter>

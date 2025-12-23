@@ -19,12 +19,16 @@ const THEME_KEY = 'theme';
  */
 export async function saveTheme(theme: ThemeMode): Promise<void> {
   try {
-    console.log('[themeStorage] Saving theme...', { theme });
+    if (import.meta.env.DEV) {
+      console.log('[themeStorage] Saving theme...', { theme });
+    }
     const s = await getStore(STORE_FILE);
     const data: StoredThemeData = { theme };
     await s.set(THEME_KEY, data);
     await s.save();
-    console.log('[themeStorage] ✓ Theme saved successfully');
+    if (import.meta.env.DEV) {
+      console.log('[themeStorage] ✓ Theme saved successfully');
+    }
   } catch (error) {
     console.error('[themeStorage] ✗ Failed to save theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -37,16 +41,22 @@ export async function saveTheme(theme: ThemeMode): Promise<void> {
  */
 export async function loadTheme(): Promise<ThemeMode | null> {
   try {
-    console.log('[themeStorage] Loading theme...');
+    if (import.meta.env.DEV) {
+      console.log('[themeStorage] Loading theme...');
+    }
     const s = await getStore(STORE_FILE);
     const data = await s.get<StoredThemeData>(THEME_KEY);
     if (data?.theme) {
-      console.log('[themeStorage] ✓ Theme loaded successfully', {
-        theme: data.theme,
-      });
+      if (import.meta.env.DEV) {
+        console.log('[themeStorage] ✓ Theme loaded successfully', {
+          theme: data.theme,
+        });
+      }
       return data.theme;
     } else {
-      console.log('[themeStorage] ⓘ No theme setting found, using default');
+      if (import.meta.env.DEV) {
+        console.log('[themeStorage] ⓘ No theme setting found, using default');
+      }
       return null;
     }
   } catch (error) {
@@ -60,11 +70,15 @@ export async function loadTheme(): Promise<ThemeMode | null> {
  */
 export async function clearTheme(): Promise<void> {
   try {
-    console.log('[themeStorage] Clearing theme...');
+    if (import.meta.env.DEV) {
+      console.log('[themeStorage] Clearing theme...');
+    }
     const s = await getStore(STORE_FILE);
     await s.delete(THEME_KEY);
     await s.save();
-    console.log('[themeStorage] ✓ Theme cleared successfully');
+    if (import.meta.env.DEV) {
+      console.log('[themeStorage] ✓ Theme cleared successfully');
+    }
   } catch (error) {
     console.error('[themeStorage] ✗ Failed to clear theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
