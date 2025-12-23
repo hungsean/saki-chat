@@ -3,7 +3,7 @@
  * Handles secure storage of authentication tokens using Tauri Store
  */
 
-import { Store } from '@tauri-apps/plugin-store';
+import { getStore } from './storeManager';
 
 interface StoredAuthData {
   userId: string;
@@ -16,22 +16,6 @@ interface StoredAuthData {
 const STORE_FILE = 'auth.json';
 const AUTH_KEY = 'credentials';
 
-let store: Store | null = null;
-
-/**
- * Initialize the store
- */
-async function getStore(): Promise<Store> {
-  if (!store) {
-    console.log('[authStorage] Initializing Tauri Store...', {
-      file: STORE_FILE,
-    });
-    store = await Store.load(STORE_FILE);
-    console.log('[authStorage] ✓ Tauri Store initialized');
-  }
-  return store;
-}
-
 /**
  * Save authentication data to Tauri Store
  */
@@ -39,7 +23,7 @@ export async function saveAuthData(data: StoredAuthData): Promise<void> {
   try {
     // ⚠️ SECURITY: Never log accessToken or other sensitive credentials
     console.log('[authStorage] Saving auth data...', { userId: data.userId });
-    const s = await getStore();
+    const s = await getStore(STORE_FILE);
     await s.set(AUTH_KEY, data);
     await s.save();
     console.log('[authStorage] ✓ Auth data saved successfully');
@@ -56,7 +40,7 @@ export async function saveAuthData(data: StoredAuthData): Promise<void> {
 export async function loadAuthData(): Promise<StoredAuthData | null> {
   try {
     console.log('[authStorage] Loading auth data...');
-    const s = await getStore();
+    const s = await getStore(STORE_FILE);
     const data = await s.get<StoredAuthData>(AUTH_KEY);
     if (data) {
       // ⚠️ SECURITY: Never log accessToken or other sensitive credentials
@@ -79,7 +63,7 @@ export async function loadAuthData(): Promise<StoredAuthData | null> {
 export async function clearAuthData(): Promise<void> {
   try {
     console.log('[authStorage] Clearing auth data...');
-    const s = await getStore();
+    const s = await getStore(STORE_FILE);
     await s.delete(AUTH_KEY);
     await s.save();
     console.log('[authStorage] ✓ Auth data cleared successfully');
@@ -95,10 +79,10 @@ export async function clearAuthData(): Promise<void> {
  */
 export async function hasAuthData(): Promise<boolean> {
   try {
-    const s = await getStore();
+    const s = await getStore(STORE_FILE);
     return await s.has(AUTH_KEY);
   } catch (error) {
-    console.error('Failed to check auth data:', error);
+    console.error('[authStorage] Failed to check auth data:', error);
     return false;
   }
 }
