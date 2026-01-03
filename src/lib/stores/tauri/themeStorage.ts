@@ -4,6 +4,7 @@
  */
 
 import { getStore } from './storeManager';
+import { storageLogger } from '@/lib/utils/logger';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -19,18 +20,13 @@ const THEME_KEY = 'theme';
  */
 export async function saveTheme(theme: ThemeMode): Promise<void> {
   try {
-    if (import.meta.env.DEV) {
-      console.log('[themeStorage] Saving theme...', { theme });
-    }
     const s = await getStore(STORE_FILE);
     const data: StoredThemeData = { theme };
     await s.set(THEME_KEY, data);
     await s.save();
-    if (import.meta.env.DEV) {
-      console.log('[themeStorage] ✓ Theme saved successfully');
-    }
+    storageLogger.info('Theme saved:', { theme });
   } catch (error) {
-    console.error('[themeStorage] ✗ Failed to save theme:', error);
+    storageLogger.error('Failed to save theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to save theme: ${errorMessage}`);
   }
@@ -41,26 +37,17 @@ export async function saveTheme(theme: ThemeMode): Promise<void> {
  */
 export async function loadTheme(): Promise<ThemeMode | null> {
   try {
-    if (import.meta.env.DEV) {
-      console.log('[themeStorage] Loading theme...');
-    }
     const s = await getStore(STORE_FILE);
     const data = await s.get<StoredThemeData>(THEME_KEY);
     if (data?.theme) {
-      if (import.meta.env.DEV) {
-        console.log('[themeStorage] ✓ Theme loaded successfully', {
-          theme: data.theme,
-        });
-      }
+      storageLogger.info('Theme loaded:', { theme: data.theme });
       return data.theme;
     } else {
-      if (import.meta.env.DEV) {
-        console.log('[themeStorage] ⓘ No theme setting found, using default');
-      }
+      storageLogger.info('No theme setting found, using default');
       return null;
     }
   } catch (error) {
-    console.error('[themeStorage] ✗ Failed to load theme:', error);
+    storageLogger.error('Failed to load theme:', error);
     return null;
   }
 }
@@ -70,17 +57,12 @@ export async function loadTheme(): Promise<ThemeMode | null> {
  */
 export async function clearTheme(): Promise<void> {
   try {
-    if (import.meta.env.DEV) {
-      console.log('[themeStorage] Clearing theme...');
-    }
     const s = await getStore(STORE_FILE);
     await s.delete(THEME_KEY);
     await s.save();
-    if (import.meta.env.DEV) {
-      console.log('[themeStorage] ✓ Theme cleared successfully');
-    }
+    storageLogger.info('Theme cleared');
   } catch (error) {
-    console.error('[themeStorage] ✗ Failed to clear theme:', error);
+    storageLogger.error('Failed to clear theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to clear theme: ${errorMessage}`);
   }
@@ -94,7 +76,7 @@ export async function hasTheme(): Promise<boolean> {
     const s = await getStore(STORE_FILE);
     return await s.has(THEME_KEY);
   } catch (error) {
-    console.error('[themeStorage] Failed to check theme:', error);
+    storageLogger.error('Failed to check theme:', error);
     return false;
   }
 }
