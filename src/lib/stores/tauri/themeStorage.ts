@@ -15,9 +15,21 @@ const STORE_FILE = 'settings.json';
 const THEME_KEY = 'theme';
 
 /**
+ * Validate if a value is a valid ThemeMode
+ */
+function isValidThemeMode(value: unknown): value is ThemeMode {
+  return value === 'system' || value === 'light' || value === 'dark';
+}
+
+/**
  * Save theme setting to Tauri Store
  */
 export async function saveTheme(theme: ThemeMode): Promise<void> {
+  // Runtime validation
+  if (!isValidThemeMode(theme)) {
+    throw new Error(`Invalid theme mode: ${String(theme)}`);
+  }
+
   try {
     const s = await getStore(STORE_FILE);
     const data: StoredThemeData = { theme };
@@ -37,9 +49,14 @@ export async function loadTheme(): Promise<ThemeMode | null> {
   try {
     const s = await getStore(STORE_FILE);
     const data = await s.get<StoredThemeData>(THEME_KEY);
-    if (data?.theme) {
+
+    // Validate loaded data
+    if (data?.theme && isValidThemeMode(data.theme)) {
       return data.theme;
     } else {
+      if (data?.theme) {
+        console.warn('Invalid theme mode in storage:', data.theme);
+      }
       return null;
     }
   } catch (error) {

@@ -16,8 +16,14 @@ import {
 export function ThemeToggle() {
   const { mode, setTheme } = useThemeStore();
 
-  const handleThemeChange = (newMode: ThemeMode) => {
-    setTheme(newMode);
+  const handleThemeChange = async (newMode: ThemeMode) => {
+    try {
+      await setTheme(newMode);
+    } catch (error) {
+      console.error('Failed to change theme:', error);
+      // Theme change failed, but the UI will remain functional
+      // The error is logged for debugging purposes
+    }
   };
 
   const getCurrentIcon = () => {
