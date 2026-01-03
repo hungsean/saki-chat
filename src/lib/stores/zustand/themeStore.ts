@@ -6,7 +6,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { type ThemeMode, saveTheme, loadTheme } from '../tauri/themeStorage';
-import { themeLogger } from '@/lib/utils/logger';
 
 export type { ThemeMode };
 
@@ -58,10 +57,8 @@ export const useThemeStore = create<ThemeState>()(
           // Update resolved theme based on new mode
           state.resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
         });
-
-        themeLogger.info('Theme updated:', { mode });
       } catch (error) {
-        themeLogger.error('Failed to set theme:', error);
+        console.error('Failed to set theme:', error);
         throw error;
       }
     },
@@ -76,8 +73,6 @@ export const useThemeStore = create<ThemeState>()(
     // Initialize theme from storage
     initializeTheme: async () => {
       try {
-        themeLogger.info('Initializing theme...');
-
         // Load saved theme from storage
         const savedTheme = await loadTheme();
         const mode = savedTheme || 'system';
@@ -88,13 +83,8 @@ export const useThemeStore = create<ThemeState>()(
           state.resolvedTheme = resolvedTheme;
           state.isInitialized = true;
         });
-
-        themeLogger.info('Theme initialized:', {
-          mode,
-          resolvedTheme,
-        });
       } catch (error) {
-        themeLogger.error('Failed to initialize theme:', error);
+        console.error('Failed to initialize theme:', error);
         // Fallback to default
         set((state) => {
           state.mode = 'system';

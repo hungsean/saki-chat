@@ -4,7 +4,6 @@
  */
 
 import { getStore } from './storeManager';
-import { storageLogger } from '@/lib/utils/logger';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -24,9 +23,8 @@ export async function saveTheme(theme: ThemeMode): Promise<void> {
     const data: StoredThemeData = { theme };
     await s.set(THEME_KEY, data);
     await s.save();
-    storageLogger.info('Theme saved:', { theme });
   } catch (error) {
-    storageLogger.error('Failed to save theme:', error);
+    console.error('Failed to save theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to save theme: ${errorMessage}`);
   }
@@ -40,14 +38,12 @@ export async function loadTheme(): Promise<ThemeMode | null> {
     const s = await getStore(STORE_FILE);
     const data = await s.get<StoredThemeData>(THEME_KEY);
     if (data?.theme) {
-      storageLogger.info('Theme loaded:', { theme: data.theme });
       return data.theme;
     } else {
-      storageLogger.info('No theme setting found, using default');
       return null;
     }
   } catch (error) {
-    storageLogger.error('Failed to load theme:', error);
+    console.error('Failed to load theme:', error);
     return null;
   }
 }
@@ -60,9 +56,8 @@ export async function clearTheme(): Promise<void> {
     const s = await getStore(STORE_FILE);
     await s.delete(THEME_KEY);
     await s.save();
-    storageLogger.info('Theme cleared');
   } catch (error) {
-    storageLogger.error('Failed to clear theme:', error);
+    console.error('Failed to clear theme:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to clear theme: ${errorMessage}`);
   }
@@ -76,7 +71,7 @@ export async function hasTheme(): Promise<boolean> {
     const s = await getStore(STORE_FILE);
     return await s.has(THEME_KEY);
   } catch (error) {
-    storageLogger.error('Failed to check theme:', error);
+    console.error('Failed to check theme:', error);
     return false;
   }
 }

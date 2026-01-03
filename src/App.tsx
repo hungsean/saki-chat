@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/features/auth/LoginForm';
 import { LoginSuccess } from '@/features/auth/LoginSuccess';
-import { ThemeShowcase } from '@/features/theme/ThemeShowcase';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { loadAuthData } from '@/lib/stores/tauri/authStorage';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
@@ -69,10 +68,6 @@ function App() {
               isAuthenticated ? <LoginSuccess /> : <Navigate to="/login" />
             }
           />
-          {/* Theme showcase is only available in development mode */}
-          {import.meta.env.DEV && (
-            <Route path="/theme" element={<ThemeShowcase />} />
-          )}
           <Route
             path="*"
             element={<Navigate to={isAuthenticated ? '/success' : '/login'} />}
