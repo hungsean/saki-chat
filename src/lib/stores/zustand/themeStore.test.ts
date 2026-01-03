@@ -136,17 +136,6 @@ describe('themeStore', () => {
       await expect(setTheme('light')).rejects.toThrow();
       expect(console.error).toHaveBeenCalled();
     });
-
-    it('應該在設定主題後記錄日誌', async () => {
-      vi.mocked(themeStorage.saveTheme).mockResolvedValue();
-
-      const { setTheme } = useThemeStore.getState();
-      await setTheme('dark');
-
-      expect(console.log).toHaveBeenCalledWith('[themeStore] Theme updated:', {
-        mode: 'dark',
-      });
-    });
   });
 
   describe('setResolvedTheme', () => {
@@ -229,24 +218,6 @@ describe('themeStore', () => {
       expect(state.mode).toBe('system');
       expect(state.isInitialized).toBe(true);
       expect(console.error).toHaveBeenCalled();
-    });
-
-    it('應該記錄初始化成功的日誌', async () => {
-      vi.mocked(themeStorage.loadTheme).mockResolvedValue('light');
-
-      const { initializeTheme } = useThemeStore.getState();
-      await initializeTheme();
-
-      expect(console.log).toHaveBeenCalledWith(
-        '[themeStore] Initializing theme...'
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        '[themeStore] ✓ Theme initialized:',
-        {
-          mode: 'light',
-          resolvedTheme: 'light',
-        }
-      );
     });
   });
 

@@ -19,7 +19,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "type-check": "tsc --noEmit",
     "bundle-size": "vite build --mode analyze",
-    "bundle-check": "node scripts/check-bundle-size.js"
+    "bundle-check": "node scripts/check-bundle-size.js",
+    "check": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm bundle-check && pnpm build",
+    "security-check": "pnpm audit --audit-level high"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",
