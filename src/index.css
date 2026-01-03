@@ -74,6 +74,17 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+
+  /* Saki Color Palette - Available for use throughout the app */
+  --color-saki-pink: oklch(0.62 0.2 12); /* Core pink #EA4A5B */
+  --color-saki-pink-light: oklch(0.7 0.18 15); /* Light pink #FF7A91 */
+  --color-saki-pink-lighter: oklch(0.75 0.15 20); /* Lighter pink */
+  --color-saki-pink-subtle: oklch(0.75 0.12 15); /* Subtle pink */
+  --color-saki-pink-soft: oklch(0.8 0.1 350); /* Soft pink */
+  --color-saki-bg-deep: oklch(0.15 0.01 285); /* Deep purple background */
+  --color-saki-bg-surface: oklch(0.2 0.015 285); /* Surface purple */
+  --color-saki-bg-muted: oklch(0.3 0.03 345); /* Muted pink-grey */
+  --color-saki-border: oklch(0.38 0.04 340 / 45%); /* Pink-tinted border */
 }
 
 .dark {
@@ -108,6 +119,21 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
+
+  /* Saki Color Palette - Dark Mode Variants */
+  --color-saki-pink: oklch(
+    0.65 0.18 12
+  ); /* Slightly brighter pink for dark bg */
+  --color-saki-pink-light: oklch(0.72 0.16 15); /* Light pink adjusted */
+  --color-saki-pink-lighter: oklch(0.77 0.14 20); /* Lighter pink adjusted */
+  --color-saki-pink-subtle: oklch(0.7 0.1 15); /* More subtle in dark mode */
+  --color-saki-pink-soft: oklch(0.75 0.08 350); /* Softer in dark mode */
+  --color-saki-bg-deep: oklch(0.12 0.01 285); /* Even deeper background */
+  --color-saki-bg-surface: oklch(0.18 0.015 285); /* Slightly darker surface */
+  --color-saki-bg-muted: oklch(0.25 0.025 345); /* Adjusted muted background */
+  --color-saki-border: oklch(
+    0.42 0.05 340 / 50%
+  ); /* Brighter border for visibility */
 }
 
 @layer base {
