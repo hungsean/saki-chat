@@ -58,10 +58,7 @@ export const useThemeStore = create<ThemeState>()(
       try {
         await saveTheme(mode);
       } catch (error) {
-        console.error(
-          'Failed to persist theme (running without Tauri?):',
-          error
-        );
+        console.error('Failed to persist theme to storage:', error);
         // Don't throw - theme change already applied to state, just not persisted
       }
     },
