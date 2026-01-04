@@ -127,13 +127,21 @@ describe('themeStore', () => {
       expect(themeStorage.saveTheme).toHaveBeenCalledWith('system');
     });
 
-    it('應該在儲存失敗時拋出錯誤', async () => {
+    it('應該在儲存失敗時仍能更新狀態', async () => {
       const error = new Error('Failed to save');
       vi.mocked(themeStorage.saveTheme).mockRejectedValue(error);
 
       const { setTheme } = useThemeStore.getState();
 
-      await expect(setTheme('light')).rejects.toThrow();
+      // Should not throw - state update should succeed even if storage fails
+      await expect(setTheme('light')).resolves.toBeUndefined();
+
+      // State should be updated despite storage failure
+      const state = useThemeStore.getState();
+      expect(state.mode).toBe('light');
+      expect(state.resolvedTheme).toBe('light');
+
+      // Error should be logged
       expect(console.error).toHaveBeenCalled();
     });
   });
