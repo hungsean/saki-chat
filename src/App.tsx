@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { LoginForm } from '@/features/auth/LoginForm';
+import { HomeserverForm } from '@/features/auth/HomeserverForm';
+import { CredentialsForm } from '@/features/auth/CredentialsForm';
 import { LoginSuccess } from '@/features/auth/LoginSuccess';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { loadAuthData } from '@/lib/stores/tauri/authStorage';
@@ -59,7 +60,13 @@ function App() {
           <Route
             path="/login"
             element={
-              isAuthenticated ? <Navigate to="/success" /> : <LoginForm />
+              isAuthenticated ? <Navigate to="/success" /> : <HomeserverForm />
+            }
+          />
+          <Route
+            path="/login/credentials"
+            element={
+              isAuthenticated ? <Navigate to="/success" /> : <CredentialsForm />
             }
           />
           <Route

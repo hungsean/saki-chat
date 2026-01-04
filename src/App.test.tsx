@@ -3,9 +3,17 @@ import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 import * as authStorage from '@/lib/stores/tauri/authStorage';
 
-// Mock LoginForm 和 LoginSuccess 元件
-vi.mock('@/features/auth/LoginForm', () => ({
-  LoginForm: () => <div data-testid="login-form">Login Form</div>,
+// Mock HomeserverForm, CredentialsForm 和 LoginSuccess 元件
+vi.mock('@/features/auth/HomeserverForm', () => ({
+  HomeserverForm: () => (
+    <div data-testid="homeserver-form">Homeserver Form</div>
+  ),
+}));
+
+vi.mock('@/features/auth/CredentialsForm', () => ({
+  CredentialsForm: () => (
+    <div data-testid="credentials-form">Credentials Form</div>
+  ),
 }));
 
 vi.mock('@/features/auth/LoginSuccess', () => ({
@@ -134,7 +142,7 @@ describe('App', () => {
         expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
 
-      expect(screen.getByTestId('login-form')).toBeInTheDocument();
+      expect(screen.getByTestId('homeserver-form')).toBeInTheDocument();
     });
 
     it('應該在已認證時從登入頁重定向到成功頁', async () => {
