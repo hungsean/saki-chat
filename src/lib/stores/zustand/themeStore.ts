@@ -47,19 +47,22 @@ export const useThemeStore = create<ThemeState>()(
 
     // Set theme mode and persist to storage
     setTheme: async (mode: ThemeMode) => {
-      try {
-        // Save to Tauri Store
-        await saveTheme(mode);
+      // Update state first - this ensures theme switching works even if storage fails
+      set((state) => {
+        state.mode = mode;
+        // Update resolved theme based on new mode
+        state.resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
+      });
 
-        // Update state
-        set((state) => {
-          state.mode = mode;
-          // Update resolved theme based on new mode
-          state.resolvedTheme = mode === 'system' ? getSystemTheme() : mode;
-        });
+      // Try to persist to storage, but don't fail if unavailable (e.g., in web-only dev mode)
+      try {
+        await saveTheme(mode);
       } catch (error) {
-        console.error('Failed to set theme:', error);
-        throw error;
+        console.error(
+          'Failed to persist theme (running without Tauri?):',
+          error
+        );
+        // Don't throw - theme change already applied to state, just not persisted
       }
     },
 
