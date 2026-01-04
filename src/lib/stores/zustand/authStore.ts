@@ -22,6 +22,12 @@ export interface AuthState {
   // Matrix client instance
   client: MatrixClient | null;
 
+  // Login flow temporary data
+  pendingAuth: {
+    homeserver: string;
+    baseUrl: string;
+  } | null;
+
   // Actions
   setAuthData: (data: {
     userId: string;
@@ -32,6 +38,12 @@ export interface AuthState {
   }) => void;
   setClient: (client: MatrixClient) => void;
   setLoading: (loading: boolean) => void;
+  setPendingAuth: (
+    data: {
+      homeserver: string;
+      baseUrl: string;
+    } | null
+  ) => void;
   clearAuth: () => void;
 }
 
@@ -46,6 +58,7 @@ export const useAuthStore = create<AuthState>()(
     homeServer: null,
     baseUrl: null,
     client: null,
+    pendingAuth: null,
 
     // Actions
     setAuthData: (data) =>
@@ -68,6 +81,11 @@ export const useAuthStore = create<AuthState>()(
         state.isLoading = loading;
       }),
 
+    setPendingAuth: (data) =>
+      set((state) => {
+        state.pendingAuth = data;
+      }),
+
     clearAuth: () =>
       set((state) => {
         state.isAuthenticated = false;
@@ -77,6 +95,7 @@ export const useAuthStore = create<AuthState>()(
         state.homeServer = null;
         state.baseUrl = null;
         state.client = null;
+        state.pendingAuth = null;
       }),
   }))
 );

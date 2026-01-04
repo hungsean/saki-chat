@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -10,20 +10,15 @@ import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { saveAuthData } from '@/lib/stores/tauri/authStorage';
 import { sanitizeText } from '@/lib/utils/sanitize';
 
-interface LocationState {
-  homeserver: string;
-  baseUrl: string;
-}
-
 export function CredentialsForm() {
   const navigate = useNavigate();
-  const location = useLocation();
   const setAuthData = useAuthStore((state) => state.setAuthData);
+  const pendingAuth = useAuthStore((state) => state.pendingAuth);
+  const setPendingAuth = useAuthStore((state) => state.setPendingAuth);
 
-  // Get homeserver data from navigation state
-  const state = location.state as LocationState | null;
-  const homeserver = state?.homeserver;
-  const baseUrl = state?.baseUrl;
+  // Get homeserver data from pending auth
+  const homeserver = pendingAuth?.homeserver;
+  const baseUrl = pendingAuth?.baseUrl;
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -83,6 +78,9 @@ export function CredentialsForm() {
 
       // Save to Tauri Store for persistence
       await saveAuthData(authData);
+
+      // Clear pending auth data after successful login
+      setPendingAuth(null);
 
       // Clear password immediately after successful login for security
       setPassword('');

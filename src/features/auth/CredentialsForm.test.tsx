@@ -6,31 +6,14 @@ import * as homeserverUtils from '@/lib/matrix/homeserver';
 import * as matrixClient from '@/lib/matrix/client';
 import * as authStorage from '@/lib/stores/tauri/authStorage';
 
-// Mock useNavigate and useLocation
+// Mock useNavigate
 const mockNavigate = vi.fn();
-const mockLocation: {
-  state: { homeserver: string; baseUrl: string } | null;
-  pathname: string;
-  search: string;
-  hash: string;
-  key: string;
-} = {
-  state: {
-    homeserver: 'matrix.org',
-    baseUrl: 'https://matrix-client.matrix.org',
-  },
-  pathname: '/login/credentials',
-  search: '',
-  hash: '',
-  key: 'default',
-};
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
     Navigate: ({ to, replace }: { to: string; replace?: boolean }) => (
       <div data-testid="navigate" data-to={to} data-replace={replace} />
     ),
@@ -53,10 +36,18 @@ const mockSaveAuthData = vi.mocked(authStorage.saveAuthData);
 
 // Mock auth store
 const mockSetAuthData = vi.fn();
+const mockSetPendingAuth = vi.fn();
+let mockPendingAuth: { homeserver: string; baseUrl: string } | null = {
+  homeserver: 'matrix.org',
+  baseUrl: 'https://matrix-client.matrix.org',
+};
+
 vi.mock('@/lib/stores/zustand/authStore', () => ({
   useAuthStore: vi.fn((selector) => {
     const store = {
       setAuthData: mockSetAuthData,
+      pendingAuth: mockPendingAuth,
+      setPendingAuth: mockSetPendingAuth,
     };
     return selector ? selector(store) : store;
   }),
@@ -73,8 +64,8 @@ describe('CredentialsForm', () => {
     mockExtractHomeserverDomain.mockImplementation((url) =>
       url.replace(/^https?:\/\//, '')
     );
-    // Reset location state
-    mockLocation.state = {
+    // Reset pending auth
+    mockPendingAuth = {
       homeserver: 'matrix.org',
       baseUrl: 'https://matrix-client.matrix.org',
     };
@@ -94,15 +85,15 @@ describe('CredentialsForm', () => {
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
   });
 
-  it('should display homeserver from location state', () => {
+  it('should display homeserver from pending auth', () => {
     render(<CredentialsForm />);
 
     const homeserverInput = screen.getByLabelText('Homeserver');
     expect(homeserverInput).toHaveValue('matrix.org');
   });
 
-  it('should redirect to /login if no location state', () => {
-    mockLocation.state = null;
+  it('should redirect to /login if no pending auth', () => {
+    mockPendingAuth = null;
 
     render(<CredentialsForm />);
 
@@ -170,6 +161,7 @@ describe('CredentialsForm', () => {
       baseUrl: 'https://matrix-client.matrix.org',
     });
 
+    expect(mockSetPendingAuth).toHaveBeenCalledWith(null);
     expect(mockNavigate).toHaveBeenCalledWith('/success');
   });
 

@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { verifyHomeserver } from '@/lib/matrix/homeserver';
 import { sanitizeText } from '@/lib/utils/sanitize';
+import { useAuthStore } from '@/lib/stores/zustand/authStore';
 
 export function HomeserverForm() {
   const navigate = useNavigate();
+  const setPendingAuth = useAuthStore((state) => state.setPendingAuth);
 
   const [homeserver, setHomeserver] = useState('matrix.org');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -22,13 +24,14 @@ export function HomeserverForm() {
       const result = await verifyHomeserver(homeserver);
 
       if (result.isValid && result.baseUrl) {
-        // Navigate to credentials page with homeserver data
-        navigate('/login/credentials', {
-          state: {
-            homeserver,
-            baseUrl: result.baseUrl,
-          },
+        // Store pending auth data in Zustand store
+        setPendingAuth({
+          homeserver,
+          baseUrl: result.baseUrl,
         });
+
+        // Navigate to credentials page
+        navigate('/login/credentials');
       } else {
         setError(
           result.error || 'Verification failed. Please check the homeserver URL'

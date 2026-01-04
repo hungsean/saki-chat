@@ -14,6 +14,14 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock authStore
+const mockSetPendingAuth = vi.fn();
+vi.mock('@/lib/stores/zustand/authStore', () => ({
+  useAuthStore: vi.fn((selector) =>
+    selector({ setPendingAuth: mockSetPendingAuth })
+  ),
+}));
+
 // Mock homeserver utilities
 vi.mock('@/lib/matrix/homeserver');
 const mockVerifyHomeserver = vi.mocked(homeserverUtils.verifyHomeserver);
@@ -66,12 +74,11 @@ describe('HomeserverForm', () => {
 
     await waitFor(() => {
       expect(mockVerifyHomeserver).toHaveBeenCalledWith('matrix.org');
-      expect(mockNavigate).toHaveBeenCalledWith('/login/credentials', {
-        state: {
-          homeserver: 'matrix.org',
-          baseUrl: 'https://matrix-client.matrix.org',
-        },
+      expect(mockSetPendingAuth).toHaveBeenCalledWith({
+        homeserver: 'matrix.org',
+        baseUrl: 'https://matrix-client.matrix.org',
       });
+      expect(mockNavigate).toHaveBeenCalledWith('/login/credentials');
     });
   });
 
