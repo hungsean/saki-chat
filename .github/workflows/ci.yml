@@ -1,4 +1,4 @@
-name: Build Check
+name: CI Check
 
 on:
   push:
@@ -7,12 +7,8 @@ on:
     branches: [main, develop]
 
 jobs:
-  build-frontend:
+  check:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
 
     steps:
       - name: Checkout code
@@ -23,27 +19,63 @@ jobs:
         with:
           version: 10
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'pnpm'
 
       - name: Install dependencies
+        id: install-deps
         run: pnpm install --frozen-lockfile
 
-      - name: Build frontend
+      # 使用 if: always() 確保每個檢查都會執行
+      # 但只在依賴安裝成功時執行，避免產生無意義的錯誤
+      - name: Type check
+        if: always() && steps.install-deps.outcome == 'success'
+        run: pnpm type-check
+
+      - name: ESLint
+        if: always() && steps.install-deps.outcome == 'success'
+        run: pnpm lint
+
+      - name: Format check
+        if: always() && steps.install-deps.outcome == 'success'
+        run: pnpm format:check
+
+      - name: Test with coverage
+        if: always() && steps.install-deps.outcome == 'success'
+        run: pnpm test:coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        if: always() && steps.install-deps.outcome == 'success'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Build
+        id: build
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: dist/
-          retention-days: 7
+      - name: Bundle size check
+        if: always() && steps.build.outcome == 'success'
+        run: pnpm bundle-check
 
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        if: always() && steps.install-deps.outcome == 'success'
+        with:
+          name: bundle-analysis
+          path: |
+            dist/stats.html
+            dist/stats.json
+          retention-days: 30
+
+  # 保留 Tauri build 為獨立 job（因為需要多平台）
   build-tauri:
-    needs: build-frontend
+    needs: check
     runs-on: ${{ matrix.platform }}
 
     strategy:
