@@ -29,6 +29,8 @@ export default [
         navigator: 'readonly',
         console: 'readonly',
         fetch: 'readonly',
+        sessionStorage: 'readonly',
+        localStorage: 'readonly',
         // React 相關
         React: 'readonly',
       },

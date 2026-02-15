@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { LoginForm } from '@/features/auth/LoginForm';
+import { HomeserverForm } from '@/features/auth/HomeserverForm';
+import { CredentialsForm } from '@/features/auth/CredentialsForm';
 import { LoginSuccess } from '@/features/auth/LoginSuccess';
 import { useAuthStore } from '@/lib/stores/zustand/authStore';
 import { loadAuthData } from '@/lib/stores/tauri/authStorage';
@@ -9,7 +10,9 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const pendingAuth = useAuthStore((state) => state.pendingAuth);
   const setAuthData = useAuthStore((state) => state.setAuthData);
+  const setPendingAuth = useAuthStore((state) => state.setPendingAuth);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,6 +23,22 @@ function App() {
         if (!cancelled && storedAuth) {
           // Restore authentication state
           setAuthData(storedAuth);
+        }
+
+        // Restore pending auth from sessionStorage (for page refresh)
+        if (!cancelled) {
+          const storedPending = sessionStorage.getItem('pendingAuth');
+          if (storedPending) {
+            try {
+              const parsed = JSON.parse(storedPending);
+              setPendingAuth(parsed);
+            } catch (err) {
+              if (import.meta.env.DEV) {
+                console.error('Failed to parse stored pendingAuth:', err);
+              }
+              sessionStorage.removeItem('pendingAuth');
+            }
+          }
         }
       } catch (error) {
         if (!cancelled) {
@@ -37,7 +56,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [setAuthData]);
+  }, [setAuthData, setPendingAuth]);
 
   if (isInitializing) {
     return (
@@ -59,7 +78,19 @@ function App() {
           <Route
             path="/login"
             element={
-              isAuthenticated ? <Navigate to="/success" /> : <LoginForm />
+              isAuthenticated ? <Navigate to="/success" /> : <HomeserverForm />
+            }
+          />
+          <Route
+            path="/login/credentials"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/success" />
+              ) : pendingAuth ? (
+                <CredentialsForm />
+              ) : (
+                <Navigate to="/login" replace />
+              )
             }
           />
           <Route
