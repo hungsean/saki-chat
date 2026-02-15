@@ -26,44 +26,45 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
+        id: install-deps
         run: pnpm install --frozen-lockfile
 
       # 使用 if: always() 確保每個檢查都會執行
-      # 即使前面的步驟失敗，後面的也會繼續
+      # 但只在依賴安裝成功時執行，避免產生無意義的錯誤
       - name: Type check
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm type-check
 
       - name: ESLint
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm lint
 
       - name: Format check
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm format:check
 
       - name: Test with coverage
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm test:coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
       - name: Build
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm build
 
       - name: Bundle size check
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm bundle-check
 
       - name: Upload bundle analysis
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         with:
           name: bundle-analysis
           path: |
@@ -72,7 +73,7 @@ jobs:
           retention-days: 30
 
       - name: Security audit
-        if: always()
+        if: always() && steps.install-deps.outcome == 'success'
         run: pnpm security-check
 
   # 保留 Tauri build 為獨立 job（因為需要多平台）
