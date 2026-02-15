@@ -24,11 +24,16 @@ export function HomeserverForm() {
       const result = await verifyHomeserver(homeserver);
 
       if (result.isValid && result.baseUrl) {
-        // Store pending auth data in Zustand store
-        setPendingAuth({
+        const pendingAuthData = {
           homeserver,
           baseUrl: result.baseUrl,
-        });
+        };
+
+        // Store pending auth data in Zustand store
+        setPendingAuth(pendingAuthData);
+
+        // Persist to sessionStorage for page refresh
+        sessionStorage.setItem('pendingAuth', JSON.stringify(pendingAuthData));
 
         // Navigate to credentials page
         navigate('/login/credentials');
@@ -38,11 +43,12 @@ export function HomeserverForm() {
         );
       }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Verification failed. Please check the homeserver URL'
-      );
+      // Only log detailed errors in development
+      if (import.meta.env.DEV) {
+        console.error('Homeserver verification error:', err);
+      }
+      // Use generic error message to avoid leaking sensitive information
+      setError('Verification failed. Please check the homeserver URL.');
     } finally {
       setIsVerifying(false);
     }

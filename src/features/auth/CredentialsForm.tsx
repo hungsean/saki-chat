@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -12,9 +13,13 @@ import { AuthLayout } from './AuthLayout';
 
 export function CredentialsForm() {
   const navigate = useNavigate();
-  const setAuthData = useAuthStore((state) => state.setAuthData);
-  const pendingAuth = useAuthStore((state) => state.pendingAuth);
-  const setPendingAuth = useAuthStore((state) => state.setPendingAuth);
+  const { pendingAuth, setAuthData, setPendingAuth } = useAuthStore(
+    useShallow((state) => ({
+      pendingAuth: state.pendingAuth,
+      setAuthData: state.setAuthData,
+      setPendingAuth: state.setPendingAuth,
+    }))
+  );
 
   // Get homeserver data from pending auth
   const homeserver = pendingAuth?.homeserver;
@@ -81,6 +86,7 @@ export function CredentialsForm() {
 
       // Clear pending auth data after successful login
       setPendingAuth(null);
+      sessionStorage.removeItem('pendingAuth');
 
       // Clear password immediately after successful login for security
       setPassword('');
@@ -88,9 +94,12 @@ export function CredentialsForm() {
       // Navigate to success page
       navigate('/success');
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Login failed. Please try again.'
-      );
+      // Only log detailed errors in development
+      if (import.meta.env.DEV) {
+        console.error('Login error:', err);
+      }
+      // Use generic error message to avoid leaking sensitive information
+      setError('Login failed. Please check your credentials.');
     } finally {
       setIsLoggingIn(false);
     }
