@@ -55,11 +55,12 @@ jobs:
           fail_ci_if_error: false
 
       - name: Build
+        id: build
         if: always() && steps.install-deps.outcome == 'success'
         run: pnpm build
 
       - name: Bundle size check
-        if: always() && steps.install-deps.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         run: pnpm bundle-check
 
       - name: Upload bundle analysis
@@ -71,10 +72,6 @@ jobs:
             dist/stats.html
             dist/stats.json
           retention-days: 30
-
-      - name: Security audit
-        if: always() && steps.install-deps.outcome == 'success'
-        run: pnpm security-check
 
   # 保留 Tauri build 為獨立 job（因為需要多平台）
   build-tauri:

@@ -176,6 +176,13 @@ pnpm test:run          # 執行一次測試
 pnpm test:coverage     # 生成覆蓋率報告
 ```
 
+### CI 檢查
+
+```bash
+pnpm check             # 執行快速檢查 (type-check, lint, format:check, test)
+pnpm check:full        # 執行完整檢查 (包含 build, bundle-check, security-check)
+```
+
 ---
 
 ## 注意事項
