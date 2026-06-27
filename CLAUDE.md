@@ -295,4 +295,5 @@ if (!isValidMatrixUserId(userId)) {
 - [Zustand 文件](https://docs.pmnd.rs/zustand/)
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
-@AGENTS.md
+
+本專案採用多 Agent 工作流（workflow-rules v0.1.0），動工前先讀 `.workflow-rules/entry.md`，依你這一棒的角色照著走。
