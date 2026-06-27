@@ -193,7 +193,7 @@ describe('LoginSuccess', () => {
   });
 
   describe('Logout 功能', () => {
-    it('應該在點擊 Logout 時清除認證資料並導航', async () => {
+    it('應該在點擊 Logout 時清除認證資料並導航 (Tauri 可用)', async () => {
       const user = userEvent.setup();
       mockClearAuthData.mockResolvedValue();
 
@@ -204,6 +204,23 @@ describe('LoginSuccess', () => {
 
       await waitFor(() => {
         expect(mockClearAuthData).toHaveBeenCalled();
+        expect(mockClearAuth).toHaveBeenCalled();
+        expect(mockNavigate).toHaveBeenCalledWith('/login');
+      });
+    });
+
+    it('應該在非 Tauri 環境 (clearAuthData 優雅降級) 仍清空狀態並導向 /login', async () => {
+      // 非 Tauri 環境下 clearAuthData 會優雅 resolve (不丟出 undefined is not an object),
+      // 因此後續的 clearAuth 與導頁不應被擋掉
+      const user = userEvent.setup();
+      mockClearAuthData.mockResolvedValue();
+
+      render(<LoginSuccess />);
+
+      const logoutButton = screen.getByRole('button', { name: 'Logout' });
+      await user.click(logoutButton);
+
+      await waitFor(() => {
         expect(mockClearAuth).toHaveBeenCalled();
         expect(mockNavigate).toHaveBeenCalledWith('/login');
       });

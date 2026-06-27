@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   saveAuthData,
   loadAuthData,
@@ -6,6 +6,9 @@ import {
   hasAuthData,
 } from './authStorage';
 import { resetMockTauriStore, getMockTauriStore } from '@/test/mocks/tauri';
+
+/** Narrow shape for toggling the Tauri internals marker on `window` in tests. */
+type TauriWindow = { __TAURI_INTERNALS__?: unknown };
 
 // Mock Tauri Store
 vi.mock('@tauri-apps/plugin-store', async () => {
@@ -22,6 +25,15 @@ describe('authStorage', () => {
     // 重置 mock store 狀態
     resetMockTauriStore();
     vi.clearAllMocks();
+    // 預設模擬「Tauri 可用」環境 (Tauri runtime 會注入此物件)
+    (window as unknown as TauriWindow).__TAURI_INTERNALS__ = {
+      invoke: () => {},
+    };
+  });
+
+  afterEach(() => {
+    // 清理注入的 Tauri 標記,避免影響其他測試
+    delete (window as unknown as TauriWindow).__TAURI_INTERNALS__;
   });
 
   describe('saveAuthData', () => {
@@ -141,6 +153,30 @@ describe('authStorage', () => {
 
       const mockStore = getMockTauriStore();
       expect(await mockStore.has('credentials')).toBe(false);
+    });
+
+    describe('Tauri 不可用 (非 Tauri 環境,如 pnpm dev 純瀏覽器)', () => {
+      beforeEach(() => {
+        // 模擬純瀏覽器環境: 移除 Tauri internals
+        delete (window as unknown as TauriWindow).__TAURI_INTERNALS__;
+      });
+
+      it('應該優雅完成而不丟出 undefined is not an object 錯誤', async () => {
+        // Act + Assert - 不再因 window.__TAURI_INTERNALS__ 不存在而拋錯
+        await expect(clearAuthData()).resolves.toBeUndefined();
+      });
+
+      it('應該跳過 Tauri Store 操作 (不呼叫底層 delete)', async () => {
+        // Arrange - 監看底層 store 的 delete
+        const mockStore = getMockTauriStore();
+        const deleteSpy = vi.spyOn(mockStore, 'delete');
+
+        // Act
+        await clearAuthData();
+
+        // Assert - 優雅降級,不觸碰 Tauri Store
+        expect(deleteSpy).not.toHaveBeenCalled();
+      });
     });
   });
 
