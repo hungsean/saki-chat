@@ -295,3 +295,4 @@ if (!isValidMatrixUserId(userId)) {
 - [Zustand 文件](https://docs.pmnd.rs/zustand/)
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
+@AGENTS.md
